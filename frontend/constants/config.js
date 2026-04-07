@@ -5,7 +5,7 @@ const ENV = {
     apiUrl: 'http://localhost:5000',
   },
   production: {
-    apiUrl: 'https://shrinkly-api.onrender.com', // Update with your Render URL
+    apiUrl: 'https://shrinkly-l9a2.onrender.com', // Update with your Render URL
   },
 };
 
