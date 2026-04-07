@@ -35,13 +35,6 @@ export default function RootLayout() {
       themeColor.name = 'theme-color';
       themeColor.content = Colors.bgPrimary;
       document.head.appendChild(themeColor);
-
-      // Google AdSense
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4000404993258529';
-      script.crossOrigin = 'anonymous';
-      document.head.appendChild(script);
     }
   }, []);
 
