@@ -1,9 +1,13 @@
 import React, { useEffect, useRef } from 'react';
-import { View, Text, StyleSheet, Animated, Platform, useWindowDimensions } from 'react-native';
+import { View, Text, StyleSheet, Animated, useWindowDimensions } from 'react-native';
 import { Colors, Spacing, FontSizes, BorderRadius } from '../../constants/theme';
 
+/**
+ * WEB VERSION (AdSense)
+ * This file is used exclusively for the web build to avoid native-only dependency issues.
+ */
 export default function AdBanner({ 
-  size = 'banner', // banner, rectangle, leaderboard, native
+  size = 'banner', 
   style,
   slotId = '',
 }) {
@@ -27,9 +31,8 @@ export default function AdBanner({
   };
 
   const config = sizeConfig[size];
+  if (!config) return null;
 
-  // In production, this would render actual AdSense/AdMob code
-  // For now, show a styled placeholder
   return (
     <Animated.View
       style={[
@@ -46,8 +49,8 @@ export default function AdBanner({
         <Text style={styles.adLabel}>{config.label}</Text>
         <View style={styles.adPlaceholder}>
           <Text style={styles.adIcon}>📢</Text>
-          <Text style={styles.adText}>Ad Space</Text>
-          <Text style={styles.adSubtext}>Your ad could be here</Text>
+          <Text style={styles.adText}>Google AdSense</Text>
+          <Text style={styles.adSubtext}>Space reserved for Shrinkly revenue</Text>
         </View>
       </View>
     </Animated.View>

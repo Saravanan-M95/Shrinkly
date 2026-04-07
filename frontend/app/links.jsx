@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated,
   useWindowDimensions, Platform, TextInput, ActivityIndicator, RefreshControl,
+  Linking,
 } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -9,6 +10,7 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Card from '../components/ui/Card';
 import AdBanner from '../components/ui/AdBanner';
+import QRCodeModal from '../components/ui/QRCodeModal';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
 import { Colors, Spacing, FontSizes, BorderRadius } from '../constants/theme';
@@ -28,6 +30,8 @@ export default function LinksPage() {
   const [copiedId, setCopiedId] = useState(null);
   const [expandedId, setExpandedId] = useState(null);
   const [analytics, setAnalytics] = useState({});
+  const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [selectedLink, setSelectedLink] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -98,6 +102,20 @@ export default function LinksPage() {
         const res = await urlAPI.getAnalytics(id, { days: 7 });
         setAnalytics((prev) => ({ ...prev, [id]: res.data }));
       } catch (err) { console.error(err); }
+    }
+  };
+  
+  const handleShowQR = (link) => {
+    setSelectedLink(link);
+    setQrModalVisible(true);
+  };
+
+  const getDomainFromUrl = (url) => {
+    try {
+      const { hostname } = new URL(url);
+      return hostname.replace('www.', '');
+    } catch (e) {
+      return url;
     }
   };
 
@@ -177,20 +195,28 @@ export default function LinksPage() {
                   <View style={styles.linkHeader}>
                     <View style={styles.linkInfo}>
                       <Text style={styles.linkTitle} numberOfLines={1}>
-                        {link.title || link.originalUrl}
+                        {link.title || getDomainFromUrl(link.originalUrl)}
                       </Text>
-                      <TouchableOpacity onPress={() => handleCopy(link.shortUrl, link.id)}>
-                        <View style={styles.shortUrlRow}>
+                      <View style={styles.shortUrlContainer}>
+                        <TouchableOpacity 
+                          onPress={() => Linking.openURL(link.shortUrl)}
+                          style={styles.shortUrlRow}
+                        >
                           <Ionicons name="link" size={14} color={Colors.primaryLight} />
                           <Text style={styles.shortUrlText}>{link.shortUrl}</Text>
+                        </TouchableOpacity>
+                        
+                        <TouchableOpacity 
+                          onPress={() => handleCopy(link.shortUrl, link.id)}
+                          style={styles.inlineCopyBtn}
+                        >
                           <Ionicons
                             name={copiedId === link.id ? 'checkmark' : 'copy-outline'}
                             size={14}
                             color={copiedId === link.id ? Colors.success : Colors.textMuted}
                           />
-                        </View>
-                      </TouchableOpacity>
-                      <Text style={styles.linkOriginal} numberOfLines={1}>{link.originalUrl}</Text>
+                        </TouchableOpacity>
+                      </View>
                     </View>
                     <View style={styles.linkMeta}>
                       <TouchableOpacity
@@ -219,6 +245,12 @@ export default function LinksPage() {
                 {expandedId === link.id && (
                   <View style={styles.expandedSection}>
                     <View style={styles.expandedDivider} />
+                    
+                    <View style={styles.originalUrlContainer}>
+                      <Text style={styles.originalUrlLabel}>Original URL</Text>
+                      <Text style={styles.linkOriginalExpanded}>{link.originalUrl}</Text>
+                    </View>
+
                     {analytics[link.id] ? (
                       <View style={styles.analyticsContent}>
                         <View style={styles.analyticsRow}>
@@ -280,7 +312,7 @@ export default function LinksPage() {
                         <Ionicons name="copy-outline" size={16} color={Colors.textMuted} />
                         <Text style={styles.actionBtnText}>Copy</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.actionBtn}>
+                      <TouchableOpacity onPress={() => handleShowQR(link)} style={styles.actionBtn}>
                         <Ionicons name="qr-code-outline" size={16} color={Colors.textMuted} />
                         <Text style={styles.actionBtnText}>QR Code</Text>
                       </TouchableOpacity>
@@ -320,6 +352,12 @@ export default function LinksPage() {
         </Animated.View>
         <Footer />
       </ScrollView>
+      
+      <QRCodeModal 
+        visible={qrModalVisible} 
+        onClose={() => setQrModalVisible(false)} 
+        link={selectedLink} 
+      />
     </View>
   );
 }
@@ -356,13 +394,19 @@ const styles = StyleSheet.create({
   emptyTitle: { fontSize: FontSizes.lg, fontWeight: '700', color: Colors.textPrimary },
   emptySubtext: { fontSize: FontSizes.sm, color: Colors.textMuted, textAlign: 'center' },
 
-  linkCard: { marginBottom: Spacing.md },
-  linkHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start' },
+  linkCard: { marginBottom: Spacing.md, padding: Spacing.md },
+  linkHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   linkInfo: { flex: 1, marginRight: Spacing.md },
-  linkTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.xs },
-  shortUrlRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginBottom: Spacing.xs },
+  linkTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.textPrimary, marginBottom: 2 },
+  shortUrlRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, flex: 1 },
   shortUrlText: { color: Colors.primaryLight, fontSize: FontSizes.sm, fontWeight: '600' },
+  shortUrlContainer: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: 2 },
+  inlineCopyBtn: { padding: 4 },
   linkOriginal: { color: Colors.textMuted, fontSize: FontSizes.xs },
+  
+  originalUrlContainer: { marginBottom: Spacing.md },
+  originalUrlLabel: { fontSize: 10, fontWeight: '700', color: Colors.textMuted, textTransform: 'uppercase', marginBottom: 2 },
+  linkOriginalExpanded: { color: Colors.textSecondary, fontSize: FontSizes.sm },
   linkMeta: { alignItems: 'flex-end', gap: Spacing.sm },
   statusBadge: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.xs,

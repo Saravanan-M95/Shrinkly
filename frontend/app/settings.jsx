@@ -85,6 +85,10 @@ export default function SettingsPage() {
                     {user?.provider === 'local' ? 'Email' : user?.provider} account
                   </Text>
                 </View>
+                <View style={styles.tierBadge}>
+                  <Ionicons name="gift-outline" size={12} color={Colors.success} />
+                  <Text style={styles.tierText}>Free Account</Text>
+                </View>
               </View>
             </View>
 
@@ -140,30 +144,6 @@ export default function SettingsPage() {
             </View>
           </Card>
 
-          {/* Ad Settings */}
-          <Card variant="glass" style={styles.card}>
-            <View style={styles.cardHeader}>
-              <Ionicons name="cash-outline" size={24} color={Colors.warning} />
-              <Text style={styles.cardTitle}>Ad Monetization</Text>
-            </View>
-            <Text style={styles.cardDesc}>
-              Configure your ad settings to earn revenue from your shortened links.
-              Add your AdSense publisher ID to start monetizing.
-            </Text>
-            <Input
-              label="AdSense Publisher ID"
-              value=""
-              onChangeText={() => {}}
-              placeholder="ca-pub-XXXXXXXXXXXXXXXX"
-              icon={<Ionicons name="card-outline" size={20} color={Colors.textMuted} />}
-            />
-            <View style={styles.adInfoRow}>
-              <Ionicons name="information-circle-outline" size={16} color={Colors.textMuted} />
-              <Text style={styles.adInfoText}>
-                Ad revenue is based on clicks and impressions on your interstitial pages.
-              </Text>
-            </View>
-          </Card>
 
           {/* Danger Zone */}
           <Card variant="glass" style={[styles.card, styles.dangerCard]}>
@@ -228,6 +208,12 @@ const styles = StyleSheet.create({
   accountItemTitle: { color: Colors.textSecondary, fontSize: FontSizes.sm, fontWeight: '600' },
   accountItemValue: { color: Colors.textPrimary, fontSize: FontSizes.md, marginTop: 2 },
   verifiedBadge: { paddingVertical: 4, paddingHorizontal: Spacing.sm + 2, borderRadius: BorderRadius.full },
+  tierBadge: {
+    flexDirection: 'row', alignItems: 'center', gap: 4, marginTop: Spacing.xs,
+    backgroundColor: Colors.successBg, borderRadius: BorderRadius.full,
+    paddingVertical: 2, paddingHorizontal: Spacing.sm, alignSelf: 'flex-start',
+  },
+  tierText: { color: Colors.success, fontSize: 10, fontWeight: '700', textTransform: 'uppercase' },
   adInfoRow: { flexDirection: 'row', alignItems: 'flex-start', gap: Spacing.sm, marginTop: Spacing.sm },
   adInfoText: { color: Colors.textMuted, fontSize: FontSizes.xs, flex: 1, lineHeight: 18 },
   dangerCard: { borderColor: Colors.error + '20' },

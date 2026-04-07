@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import {
   View, Text, StyleSheet, ScrollView, TouchableOpacity, Animated,
   useWindowDimensions, Platform, TextInput, ActivityIndicator, RefreshControl,
+  Linking,
 } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -12,6 +13,7 @@ import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
 import AdBanner from '../components/ui/AdBanner';
+import QRCodeModal from '../components/ui/QRCodeModal';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
 import { Colors, Spacing, FontSizes, BorderRadius, Shadows } from '../constants/theme';
@@ -33,6 +35,8 @@ export default function DashboardPage() {
   const [shortenResult, setShortenResult] = useState(null);
   const [shortenError, setShortenError] = useState('');
   const [copiedId, setCopiedId] = useState(null);
+  const [qrModalVisible, setQrModalVisible] = useState(false);
+  const [selectedLink, setSelectedLink] = useState(null);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -116,6 +120,20 @@ export default function DashboardPage() {
     }
   };
 
+  const handleShowQR = (link) => {
+    setSelectedLink(link);
+    setQrModalVisible(true);
+  };
+
+  const getDomainFromUrl = (url) => {
+    try {
+      const { hostname } = new URL(url);
+      return hostname.replace('www.', '');
+    } catch (e) {
+      return url;
+    }
+  };
+
   const statCards = [
     { label: 'Total Links', value: stats.totalUrls, icon: 'link-outline', color: Colors.primary, bg: 'rgba(124,58,237,0.1)' },
     { label: 'Total Clicks', value: stats.totalClicks, icon: 'bar-chart-outline', color: Colors.accent, bg: 'rgba(59,130,246,0.1)' },
@@ -138,7 +156,12 @@ export default function DashboardPage() {
           {/* Welcome */}
           <View style={styles.welcomeSection}>
             <View>
-              <Text style={styles.welcomeText}>Welcome back, {user?.name?.split(' ')[0]} 👋</Text>
+              <View style={styles.welcomeTitleRow}>
+                <Text style={styles.welcomeText}>Welcome back, {user?.name?.split(' ')[0]} 👋</Text>
+                <View style={styles.freeBadge}>
+                  <Text style={styles.freeBadgeText}>Free</Text>
+                </View>
+              </View>
               <Text style={styles.welcomeSubtext}>Here's how your links are performing</Text>
             </View>
             <Button
@@ -181,6 +204,9 @@ export default function DashboardPage() {
                 <Text style={styles.shortenResultUrl} numberOfLines={1}>{shortenResult.shortUrl}</Text>
                 <TouchableOpacity onPress={() => handleCopy(shortenResult.shortUrl, 'quick')}>
                   <Text style={styles.copyLink}>{copiedId === 'quick' ? '✓ Copied' : 'Copy'}</Text>
+                </TouchableOpacity>
+                <TouchableOpacity onPress={() => handleShowQR(shortenResult)} style={styles.qrIconBtn}>
+                  <Ionicons name="qr-code-outline" size={16} color={Colors.primaryLight} />
                 </TouchableOpacity>
               </View>
             )}
@@ -229,19 +255,28 @@ export default function DashboardPage() {
                     <View style={styles.linkHeader}>
                       <View style={styles.linkInfo}>
                         <Text style={styles.linkTitle} numberOfLines={1}>
-                          {link.title || link.originalUrl}
+                          {link.title || getDomainFromUrl(link.originalUrl)}
                         </Text>
-                        <TouchableOpacity onPress={() => handleCopy(link.shortUrl, link.id)}>
-                          <View style={styles.shortUrlRow}>
+                        <View style={styles.shortUrlContainer}>
+                          <TouchableOpacity 
+                            onPress={() => Linking.openURL(link.shortUrl)}
+                            style={styles.shortUrlRow}
+                          >
                             <Ionicons name="link" size={14} color={Colors.primaryLight} />
                             <Text style={styles.shortUrlText}>{link.shortUrl}</Text>
+                          </TouchableOpacity>
+                          
+                          <TouchableOpacity 
+                            onPress={() => handleCopy(link.shortUrl, link.id)}
+                            style={styles.inlineCopyBtn}
+                          >
                             <Ionicons
                               name={copiedId === link.id ? 'checkmark' : 'copy-outline'}
                               size={14}
                               color={copiedId === link.id ? Colors.success : Colors.textMuted}
                             />
-                          </View>
-                        </TouchableOpacity>
+                          </TouchableOpacity>
+                        </View>
                       </View>
                       <View style={styles.linkActions}>
                         <TouchableOpacity
@@ -256,9 +291,6 @@ export default function DashboardPage() {
                       </View>
                     </View>
                     <View style={styles.linkFooter}>
-                      <Text style={styles.linkOriginal} numberOfLines={1}>
-                        <Ionicons name="globe-outline" size={12} color={Colors.textMuted} /> {link.originalUrl}
-                      </Text>
                       <View style={styles.linkStats}>
                         <View style={styles.clickBadge}>
                           <Ionicons name="analytics-outline" size={14} color={Colors.accent} />
@@ -274,7 +306,7 @@ export default function DashboardPage() {
                         <Ionicons name="copy-outline" size={16} color={Colors.textMuted} />
                         <Text style={styles.actionBtnText}>Copy</Text>
                       </TouchableOpacity>
-                      <TouchableOpacity style={styles.actionBtn}>
+                       <TouchableOpacity onPress={() => handleShowQR(link)} style={styles.actionBtn}>
                         <Ionicons name="qr-code-outline" size={16} color={Colors.textMuted} />
                         <Text style={styles.actionBtnText}>QR</Text>
                       </TouchableOpacity>
@@ -310,6 +342,12 @@ export default function DashboardPage() {
 
         <Footer />
       </ScrollView>
+      
+      <QRCodeModal 
+        visible={qrModalVisible} 
+        onClose={() => setQrModalVisible(false)} 
+        link={selectedLink} 
+      />
     </View>
   );
 }
@@ -325,6 +363,21 @@ const styles = StyleSheet.create({
     marginBottom: Spacing.lg, flexWrap: 'wrap', gap: Spacing.md,
   },
   welcomeText: { fontSize: FontSizes.xxl, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
+  welcomeTitleRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm },
+  freeBadge: {
+    backgroundColor: Colors.successBg,
+    paddingHorizontal: Spacing.sm,
+    paddingVertical: 2,
+    borderRadius: BorderRadius.full,
+    borderWidth: 1,
+    borderColor: Colors.success + '30',
+  },
+  freeBadgeText: {
+    color: Colors.success,
+    fontSize: 10,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+  },
   welcomeSubtext: { fontSize: FontSizes.sm, color: Colors.textMuted, marginTop: Spacing.xs },
 
   quickShortenCard: { marginBottom: Spacing.lg },
@@ -371,8 +424,10 @@ const styles = StyleSheet.create({
   linkHeader: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: Spacing.sm },
   linkInfo: { flex: 1, marginRight: Spacing.md },
   linkTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.xs },
-  shortUrlRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs },
+  shortUrlRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, flex: 1 },
   shortUrlText: { color: Colors.primaryLight, fontSize: FontSizes.sm, fontWeight: '600' },
+  shortUrlContainer: { flexDirection: 'row', alignItems: 'center', gap: Spacing.sm, marginTop: 2 },
+  inlineCopyBtn: { padding: 4 },
   linkActions: {},
   statusBadge: {
     flexDirection: 'row', alignItems: 'center', gap: Spacing.xs,
@@ -392,6 +447,7 @@ const styles = StyleSheet.create({
   },
   actionBtn: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, paddingVertical: Spacing.xs, paddingHorizontal: Spacing.sm },
   actionBtnText: { color: Colors.textMuted, fontSize: FontSizes.xs, fontWeight: '600' },
+  qrIconBtn: { padding: 4, marginLeft: Spacing.xs },
 
   topUrlCard: { padding: Spacing.lg },
   topUrlTitle: { fontSize: FontSizes.md, fontWeight: '700', color: Colors.textPrimary, marginBottom: Spacing.sm },

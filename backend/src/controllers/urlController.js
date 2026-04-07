@@ -2,6 +2,7 @@ import { nanoid } from 'nanoid';
 import { validationResult } from 'express-validator';
 import { Op } from 'sequelize';
 import UAParser from 'ua-parser-js';
+import QRCode from 'qrcode';
 import { Url, Click } from '../models/index.js';
 
 export const createUrl = async (req, res, next) => {
@@ -49,7 +50,9 @@ export const createUrl = async (req, res, next) => {
     });
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
-
+    const shortUrl = `${backendUrl}/${url.shortCode}`;
+    const qrCode = await QRCode.toDataURL(shortUrl);
+    
     res.status(201).json({
       success: true,
       message: 'URL shortened successfully',
@@ -57,7 +60,8 @@ export const createUrl = async (req, res, next) => {
         url: {
           id: url.id,
           shortCode: url.shortCode,
-          shortUrl: `${backendUrl}/${url.shortCode}`,
+          shortUrl,
+          qrCode,
           originalUrl: url.originalUrl,
           title: url.title,
           isActive: url.isActive,
@@ -102,21 +106,29 @@ export const getUserUrls = async (req, res, next) => {
     });
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    
+    // Generate QR codes for all URLs in the list
+    const urlsWithQr = await Promise.all(urls.map(async (u) => {
+      const shortUrl = `${backendUrl}/${u.shortCode}`;
+      const qrCode = await QRCode.toDataURL(shortUrl);
+      return {
+        id: u.id,
+        shortCode: u.shortCode,
+        shortUrl,
+        qrCode,
+        originalUrl: u.originalUrl,
+        title: u.title,
+        isActive: u.isActive,
+        clickCount: u.clickCount,
+        expiresAt: u.expiresAt,
+        createdAt: u.createdAt,
+      };
+    }));
 
     res.json({
       success: true,
       data: {
-        urls: urls.map((u) => ({
-          id: u.id,
-          shortCode: u.shortCode,
-          shortUrl: `${backendUrl}/${u.shortCode}`,
-          originalUrl: u.originalUrl,
-          title: u.title,
-          isActive: u.isActive,
-          clickCount: u.clickCount,
-          expiresAt: u.expiresAt,
-          createdAt: u.createdAt,
-        })),
+        urls: urlsWithQr,
         pagination: {
           total: count,
           page: parseInt(page),
@@ -144,6 +156,8 @@ export const getUrlById = async (req, res, next) => {
     }
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const shortUrl = `${backendUrl}/${url.shortCode}`;
+    const qrCode = await QRCode.toDataURL(shortUrl);
 
     res.json({
       success: true,
@@ -151,7 +165,8 @@ export const getUrlById = async (req, res, next) => {
         url: {
           id: url.id,
           shortCode: url.shortCode,
-          shortUrl: `${backendUrl}/${url.shortCode}`,
+          shortUrl,
+          qrCode,
           originalUrl: url.originalUrl,
           title: url.title,
           isActive: url.isActive,
@@ -189,6 +204,8 @@ export const updateUrl = async (req, res, next) => {
     await url.save();
 
     const backendUrl = process.env.BACKEND_URL || 'http://localhost:5000';
+    const shortUrl = `${backendUrl}/${url.shortCode}`;
+    const qrCode = await QRCode.toDataURL(shortUrl);
 
     res.json({
       success: true,
@@ -197,7 +214,8 @@ export const updateUrl = async (req, res, next) => {
         url: {
           id: url.id,
           shortCode: url.shortCode,
-          shortUrl: `${backendUrl}/${url.shortCode}`,
+          shortUrl,
+          qrCode,
           originalUrl: url.originalUrl,
           title: url.title,
           isActive: url.isActive,

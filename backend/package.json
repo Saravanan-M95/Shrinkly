@@ -25,6 +25,7 @@
     "passport-microsoft": "^2.1.0",
     "pg": "^8.12.0",
     "pg-hstore": "^2.3.4",
+    "qrcode": "^1.5.4",
     "sequelize": "^6.37.3",
     "ua-parser-js": "^1.0.38"
   }
