@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { Stack } from 'expo-router';
+import Head from 'expo-router/head';
 import { StatusBar } from 'expo-status-bar';
 import { View, StyleSheet, Platform } from 'react-native';
 import { AuthProvider } from '../contexts/AuthContext';
@@ -40,6 +41,13 @@ export default function RootLayout() {
 
   return (
     <AuthProvider>
+      {Platform.OS === 'web' && (
+        <Head>
+          <title>Shrinkly — Shrink Your Links, Grow Your Reach</title>
+          <meta name="description" content="Shrinkly is a modern URL shortener with powerful analytics, ad monetization, and link management. Shorten, share, and earn." />
+          <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4000404993258529" crossorigin="anonymous" />
+        </Head>
+      )}
       <View style={styles.container}>
         <StatusBar style="light" backgroundColor={Colors.bgPrimary} />
         <Stack
