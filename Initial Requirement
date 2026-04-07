@@ -1,0 +1,421 @@
+# Shrinkly — URL Shortener Web Application
+
+A modern, ad-monetized URL shortener built as a cross-platform application with future Expo mobile deployment.
+
+## Architecture Overview
+
+```mermaid
+graph TB
+    subgraph "Frontend (Vercel)"
+        A[Expo React Native Web<br/>Expo Router] --> B[Auth Context]
+        A --> C[API Service Layer]
+        A --> D[AdSense / Ad Slots]
+    end
+    
+    subgraph "Backend (Render)"
+        E[Node.js + Express API] --> F[Auth Controller]
+        E --> G[URL Controller]
+        E --> H[Analytics Controller]
+        F --> I[JWT + OAuth]
+    end
+    
+    subgraph "Database (Render)"
+        J[(PostgreSQL)]
+    end
+    
+    C -->|REST API| E
+    E --> J
+```
+
+### Tech Stack
+
+| Layer | Technology | Deployment |
+|:---|:---|:---|
+| **Frontend** | Expo SDK 52 + React Native Web + Expo Router | Vercel (SPA) |
+| **Backend** | Node.js 20 + Express 4 | Render (Web Service) |
+| **Database** | PostgreSQL 16 | Render (Managed DB) |
+| **ORM** | Sequelize 6 | — |
+| **Auth** | JWT + bcrypt + Google/Microsoft OAuth | — |
+| **ID Generation** | nanoid (URL-safe short codes) | — |
+
+---
+
+## User Review Required
+
+> [!IMPORTANT]
+> **Ad Monetization Strategy**: Google AdSense **does not allow** ads on pure redirect/interstitial pages. The plan uses a two-pronged approach:
+> 1. **AdSense** on content-rich pages (dashboard, homepage, link analytics)
+> 2. A **countdown/interstitial page** before redirect — designed with ad slots that can use AdSense (if enough content) or a third-party CPM network (like Linkvertise or ShrinkEarn) later
+> 
+> For now, I'll create the ad slot placeholders and banner positions throughout the app. You can plug in your AdSense publisher ID later once approved.
+
+> [!IMPORTANT]
+> **Social Login (Google + Microsoft)**: These require OAuth client credentials:
+> - **Google**: A Google Cloud Console project with OAuth 2.0 Client ID
+> - **Microsoft**: An Azure AD App Registration with Client ID/Secret
+> 
+> I'll build the full OAuth flow but use placeholder credentials. You'll need to create these before deployment.
+
+> [!WARNING]
+> **React Native Web on Vercel**: The frontend will be built as an Expo SPA (`output: "single"`) deployed to Vercel. This works well for the URL shortener dashboard. The actual short URL redirect (`shrink.ly/abc123`) will be handled by the **backend API on Render**, not the frontend.
+
+---
+
+## Project Structure
+
+```
+c:\Shrinkly\
+├── backend/                          # Node.js Express API
+│   ├── src/
+│   │   ├── config/
+│   │   │   ├── database.js           # Sequelize config
+│   │   │   └── passport.js           # OAuth strategies
+│   │   ├── controllers/
+│   │   │   ├── authController.js     # Login/signup/OAuth
+│   │   │   ├── urlController.js      # CRUD + shorten
+│   │   │   └── analyticsController.js # Click stats
+│   │   ├── middleware/
+│   │   │   ├── auth.js               # JWT verification
+│   │   │   ├── rateLimiter.js        # Rate limiting
+│   │   │   └── errorHandler.js       # Global error handler
+│   │   ├── models/
+│   │   │   ├── index.js              # Sequelize init + associations
+│   │   │   ├── User.js
+│   │   │   ├── Url.js
+│   │   │   └── Click.js
+│   │   ├── routes/
+│   │   │   ├── authRoutes.js
+│   │   │   ├── urlRoutes.js
+│   │   │   └── analyticsRoutes.js
+│   │   └── server.js                 # Entry point
+│   ├── .env.example
+│   ├── package.json
+│   └── .sequelizerc
+│
+├── frontend/                         # Expo React Native Web
+│   ├── app/                          # Expo Router (file-based routing)
+│   │   ├── _layout.jsx              # Root layout + providers
+│   │   ├── index.jsx                # Homepage (hero + URL input)
+│   │   ├── (auth)/
+│   │   │   ├── _layout.jsx
+│   │   │   ├── login.jsx
+│   │   │   └── signup.jsx
+│   │   ├── (app)/
+│   │   │   ├── _layout.jsx          # Protected layout (sidebar/nav)
+│   │   │   ├── dashboard.jsx        # Link management + stats
+│   │   │   ├── links.jsx            # All links list
+│   │   │   └── settings.jsx         # Account settings
+│   │   └── go/
+│   │       └── [code].jsx            # Interstitial ad page before redirect
+│   ├── components/
+│   │   ├── ui/                       # Reusable UI components
+│   │   │   ├── Button.jsx
+│   │   │   ├── Input.jsx
+│   │   │   ├── Card.jsx
+│   │   │   ├── Modal.jsx
+│   │   │   └── AdBanner.jsx         # Ad slot component
+│   │   ├── layout/
+│   │   │   ├── Header.jsx
+│   │   │   ├── Footer.jsx
+│   │   │   └── Sidebar.jsx
+│   │   ├── home/
+│   │   │   ├── HeroSection.jsx
+│   │   │   ├── UrlShortenerInput.jsx
+│   │   │   ├── FeaturesSection.jsx
+│   │   │   └── StatsSection.jsx
+│   │   └── dashboard/
+│   │       ├── LinkCard.jsx
+│   │       ├── AnalyticsChart.jsx
+│   │       └── QuickStats.jsx
+│   ├── contexts/
+│   │   └── AuthContext.jsx           # Session management
+│   ├── services/
+│   │   └── api.js                    # Axios API client
+│   ├── hooks/
+│   │   ├── useAuth.js
+│   │   └── useLinks.js
+│   ├── constants/
+│   │   ├── theme.js                  # Design tokens
+│   │   └── config.js                 # API URLs, etc.
+│   ├── assets/
+│   │   └── images/
+│   ├── app.json                      # Expo config
+│   ├── package.json
+│   └── vercel.json                   # Vercel SPA config
+│
+└── README.md
+```
+
+---
+
+## Database Schema
+
+```mermaid
+erDiagram
+    USERS {
+        uuid id PK
+        varchar email UK
+        varchar password_hash
+        varchar name
+        varchar avatar_url
+        varchar provider "local|google|microsoft"
+        varchar provider_id
+        boolean is_verified
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    URLS {
+        uuid id PK
+        uuid user_id FK
+        varchar short_code UK
+        text original_url
+        varchar title
+        boolean is_active
+        integer click_count
+        timestamp expires_at
+        timestamp created_at
+        timestamp updated_at
+    }
+    
+    CLICKS {
+        uuid id PK
+        uuid url_id FK
+        varchar ip_address
+        varchar user_agent
+        varchar referrer
+        varchar country
+        varchar device_type
+        timestamp clicked_at
+    }
+    
+    USERS ||--o{ URLS : "creates"
+    URLS ||--o{ CLICKS : "receives"
+```
+
+---
+
+## Proposed Changes
+
+### Component 1: Backend (Node.js + Express)
+
+#### [NEW] [package.json](file:///c:/Shrinkly/backend/package.json)
+- Express 4, Sequelize 6, pg, nanoid, bcryptjs, jsonwebtoken, passport, passport-google-oauth20, passport-microsoft, helmet, cors, express-rate-limit, express-validator, morgan, dotenv
+
+#### [NEW] [server.js](file:///c:/Shrinkly/backend/src/server.js)
+- Express app initialization with middleware stack
+- CORS configured for frontend origin
+- Rate limiting (100 req/15min for auth, 30 req/min for URL creation)
+- Helmet security headers
+- Morgan logging
+- Short URL redirect endpoint: `GET /:code` → looks up URL, records click, redirects or returns interstitial page URL
+
+#### [NEW] Database Models
+- **User.js**: Email, password hash, OAuth provider fields, timestamps
+- **Url.js**: Short code (nanoid, 7 chars), original URL, click counter, expiry, active flag
+- **Click.js**: IP, user agent, referrer, country (from IP), device type, timestamp
+
+#### [NEW] Auth System
+- `POST /api/auth/signup` — Email + password registration with validation
+- `POST /api/auth/login` — Email + password login, returns JWT
+- `GET /api/auth/google` — Google OAuth redirect
+- `GET /api/auth/google/callback` — Google OAuth callback, creates/finds user, returns JWT
+- `GET /api/auth/microsoft` — Microsoft OAuth redirect  
+- `GET /api/auth/microsoft/callback` — Microsoft OAuth callback
+- `GET /api/auth/me` — Get current user from JWT
+- `POST /api/auth/logout` — Invalidate session
+
+#### [NEW] URL Shortener API
+- `POST /api/urls` — Create shortened URL (auth required)
+- `GET /api/urls` — List user's URLs with pagination + search
+- `GET /api/urls/:id` — Get single URL with stats
+- `PATCH /api/urls/:id` — Update URL (title, active status)
+- `DELETE /api/urls/:id` — Soft delete URL
+- `GET /api/urls/:id/analytics` — Detailed click analytics
+
+#### [NEW] Redirect Handler
+- `GET /:code` — Public redirect endpoint
+  - Looks up short code
+  - Records click asynchronously (non-blocking)
+  - Returns JSON with redirect info (frontend handles interstitial ad page)
+  - OR direct 302 redirect (configurable)
+
+---
+
+### Component 2: Frontend (Expo + React Native Web)
+
+#### [NEW] Expo Project Setup
+- Expo SDK 52 with Expo Router v4
+- React Native Web for browser rendering
+- `app.json` with web SPA output configuration
+- `vercel.json` for SPA routing rewrites
+
+#### [NEW] Design System & Theme
+- **Color Palette**: Deep violet primary (`#7C3AED`), electric blue accent (`#3B82F6`), dark backgrounds (`#0F0D15`, `#1A1625`)
+- **Typography**: Inter (Google Fonts) — clean, modern
+- **Glass morphism** cards with backdrop blur
+- **Gradient accents** on CTAs and highlights
+- **Smooth micro-animations** using React Native Animated/Reanimated
+
+#### [NEW] Homepage (`index.jsx`)
+- **Hero Section**: Bold headline "Shrink Your Links, Grow Your Reach", animated gradient background, floating link icons
+- **URL Input Bar**: Prominent center-stage input with "Shrink It!" button
+  - If not logged in → clicking triggers redirect to login page
+  - If logged in → shortens URL inline and shows result
+- **Features Grid**: Cards highlighting key features (Analytics, Custom Links, Ad Revenue, QR Codes)
+- **Stats Counter**: Animated counters showing total links shortened, clicks tracked
+- **AdSense Banner**: Top and bottom banner ad slots
+- **Footer**: Links, social, copyright
+
+#### [NEW] Auth Pages (`(auth)/login.jsx`, `(auth)/signup.jsx`)
+- Clean, centered card layout with glassmorphism
+- Email + password form with validation
+- Social login buttons (Google + Microsoft) with branded icons
+- "Remember me" toggle
+- Smooth transitions between login/signup
+- Background gradient animation
+
+#### [NEW] Dashboard (`(app)/dashboard.jsx`)
+- **Quick Stats Bar**: Total links, total clicks, active links, top performing link
+- **Recent Links Table/Cards**: Sortable list with copy-to-clipboard, QR code, edit, delete
+- **Analytics Summary**: Click trend chart (last 7/30 days)
+- **Quick Shorten**: Inline URL shortener at the top
+- **Ad Slots**: Sidebar banner + in-feed native ads
+
+#### [NEW] Links Management (`(app)/links.jsx`)
+- Full paginated list of all shortened URLs
+- Search + filter (by date, clicks, status)
+- Bulk actions (delete, activate/deactivate)
+- Click-to-copy short URL
+- Expandable details showing click analytics per link
+
+#### [NEW] Interstitial Ad Page (`go/[code].jsx`)
+- Countdown timer (5 seconds) before redirect
+- Ad slots (top banner + large rectangle)
+- "Skip Ad" button after countdown
+- Shows destination URL preview
+- Clean, non-intrusive design to comply with ad policies
+
+#### [NEW] Ad Integration Component (`AdBanner.jsx`)
+- Reusable ad slot component
+- Supports different sizes: banner, rectangle, leaderboard
+- Platform-aware: AdSense for web, AdMob-ready for future mobile
+- Placeholder/skeleton state when ads aren't loaded
+- Configurable via environment variables (publisher ID, ad unit IDs)
+
+---
+
+## Ad Monetization Layout
+
+```
+┌─────────────────────────────────────────────┐
+│  HEADER  │  Leaderboard Ad (728x90)         │
+├──────────┴──────────────────────────────────┤
+│                                             │
+│  ┌─────────────────────────┐  ┌──────────┐  │
+│  │                         │  │ Sidebar  │  │
+│  │    MAIN CONTENT         │  │ Ad       │  │
+│  │    (Dashboard/Links)    │  │ (300x250)│  │
+│  │                         │  │          │  │
+│  │  ┌─────────────────┐   │  │          │  │
+│  │  │ In-Feed Ad      │   │  │          │  │
+│  │  │ (Native Style)  │   │  │          │  │
+│  │  └─────────────────┘   │  └──────────┘  │
+│  │                         │               │
+│  └─────────────────────────┘               │
+│                                             │
+├─────────────────────────────────────────────┤
+│  Footer Banner Ad (728x90)                  │
+└─────────────────────────────────────────────┘
+```
+
+---
+
+## API Endpoints Summary
+
+| Method | Endpoint | Auth | Description |
+|:---|:---|:---|:---|
+| `POST` | `/api/auth/signup` | ✗ | Register with email/password |
+| `POST` | `/api/auth/login` | ✗ | Login, returns JWT |
+| `GET` | `/api/auth/google` | ✗ | Google OAuth flow |
+| `GET` | `/api/auth/google/callback` | ✗ | Google OAuth callback |
+| `GET` | `/api/auth/microsoft` | ✗ | Microsoft OAuth flow |
+| `GET` | `/api/auth/microsoft/callback` | ✗ | Microsoft OAuth callback |
+| `GET` | `/api/auth/me` | ✓ | Current user profile |
+| `POST` | `/api/urls` | ✓ | Create short URL |
+| `GET` | `/api/urls` | ✓ | List user's URLs |
+| `GET` | `/api/urls/:id` | ✓ | Get URL details |
+| `PATCH` | `/api/urls/:id` | ✓ | Update URL |
+| `DELETE` | `/api/urls/:id` | ✓ | Delete URL |
+| `GET` | `/api/urls/:id/analytics` | ✓ | URL click analytics |
+| `GET` | `/:code` | ✗ | Redirect short URL |
+
+---
+
+## Execution Phases
+
+### Phase 1: Backend Foundation
+1. Initialize Node.js project with all dependencies
+2. Set up Express server with middleware stack
+3. Configure Sequelize + PostgreSQL connection
+4. Create database models (User, Url, Click)
+5. Implement auth routes (signup, login, JWT)
+6. Implement URL CRUD routes
+7. Implement redirect handler with click tracking
+
+### Phase 2: OAuth Integration
+8. Set up Passport.js with Google strategy
+9. Set up Passport.js with Microsoft strategy
+10. OAuth callback handlers that create/find users and return JWTs
+
+### Phase 3: Frontend Foundation
+11. Initialize Expo project with React Native Web
+12. Set up design system (theme, typography, colors)
+13. Build reusable UI components (Button, Input, Card, Modal)
+14. Set up Expo Router with auth/app route groups
+15. Create AuthContext with JWT token management
+
+### Phase 4: Frontend Pages
+16. Build Homepage with hero section + URL input
+17. Build Login/Signup pages with social login buttons
+18. Build Dashboard with quick stats + recent links
+19. Build Links management page
+20. Build Interstitial ad/countdown page
+
+### Phase 5: Integration & Polish
+21. Connect frontend to backend API
+22. Add ad banner component with placeholder slots
+23. Add micro-animations and transitions
+24. Responsive design testing
+25. Vercel deployment configuration
+
+---
+
+## Open Questions
+
+> [!IMPORTANT]
+> 1. **Custom domain for short URLs**: Do you plan to use a custom short domain (e.g., `shrink.ly`) for the redirect URLs, or will the backend Render URL suffice for now?
+
+> [!IMPORTANT]
+> 2. **QR Code generation**: Should I include QR code generation for each shortened URL? This is a common feature that adds value.
+
+> [!IMPORTANT]
+> 3. **Link expiration**: Should shortened URLs have a default expiration period, or should they be permanent by default?
+
+> [!NOTE]
+> 4. **Ad network preference**: For the interstitial countdown page, AdSense may reject ads on redirect pages. Would you like me to design for a specific alternative ad network, or just create universal ad slots?
+
+---
+
+## Verification Plan
+
+### Automated Tests
+- Backend API tests using the browser tool to hit endpoints
+- Frontend renders correctly in the browser
+
+### Manual Verification
+- Full signup → login → shorten URL → view dashboard flow
+- Social login button behavior (will show OAuth redirect but won't complete without real credentials)
+- Responsive design across desktop/tablet/mobile viewports
+- Ad slot rendering and positioning
+- Interstitial countdown page flow
