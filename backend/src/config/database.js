@@ -12,12 +12,14 @@ const sequelize = new Sequelize(process.env.DATABASE_URL, {
     acquire: 30000,
     idle: 10000,
   },
-  dialectOptions: process.env.NODE_ENV === 'production' ? {
-    ssl: {
-      require: true,
-      rejectUnauthorized: false,
-    },
-  } : {},
+  dialectOptions: {
+    ssl: (process.env.DATABASE_URL && (process.env.DATABASE_URL.includes('sslmode=require') || process.env.NODE_ENV === 'production'))
+      ? {
+          require: true,
+          rejectUnauthorized: false,
+        }
+      : false
+  },
 });
 
 export default sequelize;
