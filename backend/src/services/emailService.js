@@ -13,9 +13,18 @@ const transporter = nodemailer.createTransport({
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
   },
-  connectionTimeout: 5000, // 5 seconds
-  greetingTimeout: 5000,   // 5 seconds
+  connectionTimeout: 5000,
+  greetingTimeout: 5000,
+  socketTimeout: 5000,
+  // Force IPv4 to prevent ENETUNREACH errors on hosts like Render
+  // that may not have IPv6 correctly configured
+  family: 4, 
 });
+
+// Validate credentials on startup
+if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+  console.warn('WARNING: SMTP_USER or SMTP_PASS is missing. Email service will not work.');
+}
 
 /**
  * Send Password Reset OTP Email
