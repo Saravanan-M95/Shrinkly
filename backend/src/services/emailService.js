@@ -9,27 +9,27 @@ if (dns.setDefaultResultOrder) {
 
 /**
  * Configure Nodemailer with Gmail SMTP
- * For Gmail, users MUST provide an "App Password"
  */
+const smtpUser = (process.env.SMTP_USER || '').trim();
+const smtpPass = (process.env.SMTP_PASS || '').replace(/\s+/g, ''); // Remove spaces from App Password
+
 const transporter = nodemailer.createTransport({
   host: 'smtp.gmail.com',
-  port: 587,
-  secure: false, // Use STARTTLS
+  port: 465,
+  secure: true, // Use SMTPS
   auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-  tls: {
-    // Explicitly tell Node.js to use IPv4 for the socket
-    family: 4
+    user: smtpUser,
+    pass: smtpPass,
   },
   connectionTimeout: 10000,
   greetingTimeout: 10000,
   socketTimeout: 10000,
+  // Force IPv4 at the socket level
+  family: 4, 
 });
 
 // Validate credentials on startup
-if (!process.env.SMTP_USER || !process.env.SMTP_PASS) {
+if (!smtpUser || !smtpPass) {
   console.warn('WARNING: SMTP_USER or SMTP_PASS is missing. Email service will not work.');
 }
 
