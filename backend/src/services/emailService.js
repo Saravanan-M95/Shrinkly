@@ -1,32 +1,47 @@
-import axios from 'axios';
+import nodemailer from 'nodemailer';
+import dns from 'dns';
+
+// Force IPv4 preference globally
+if (dns.setDefaultResultOrder) {
+  dns.setDefaultResultOrder('ipv4first');
+}
 
 /**
- * Send Password Reset OTP Email using Brevo API (v3)
- * This method uses HTTPS, completely bypassing SMTP/networking issues on Render.
+ * Configure Nodemailer with Brevo SMTP (Port 2525)
+ * This configuration is proven to work in the Savory Bites project on Render.
+ */
+const transporter = nodemailer.createTransport({
+  host: process.env.SMTP_HOST || 'smtp-relay.brevo.com',
+  port: parseInt(process.env.SMTP_PORT) || 2525,
+  secure: false, // Port 2525 uses STARTTLS
+  auth: {
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS, // Your Brevo SMTP key (xsmtpsib-...)
+  },
+  family: 4, // Force IPv4
+  connectionTimeout: 20000,
+  greetingTimeout: 20000,
+  socketTimeout: 20000,
+  tls: {
+    // This allows connecting even if there are certificate routing issues on cloud networks
+    rejectUnauthorized: false
+  }
+});
+
+/**
+ * Send Password Reset OTP Email
  * @param {string} to - User email
  * @param {string} otp - 6-digit code
  * @param {string} name - User's name
  */
 export const sendResetPasswordEmail = async (to, otp, name) => {
-  const BREVO_API_KEY = (process.env.BREVO_API_KEY || '').trim();
-  const SENDER_EMAIL = (process.env.SENDER_EMAIL || 'saravanan619.m@gmail.com').trim();
-  const SENDER_NAME = 'ShrinQE Auth';
-
-  if (!BREVO_API_KEY) {
-    console.error('BREVO_API_KEY is missing in environment variables');
-    throw new Error('Email service configuration missing');
-  }
-
-  // Safe debugging: Log length and masked key to confirm Render is passing it correctly
-  console.log(`[EmailService] API Key Length: ${BREVO_API_KEY.length}`);
-  console.log(`[EmailService] API Key Format: ${BREVO_API_KEY.substring(0, 10)}...${BREVO_API_KEY.substring(BREVO_API_KEY.length - 5)}`);
-
-
-  const data = {
-    sender: { name: SENDER_NAME, email: SENDER_EMAIL },
-    to: [{ email: to, name: name }],
+  const fromEmail = process.env.SENDER_EMAIL || process.env.SMTP_USER;
+  
+  const mailOptions = {
+    from: `"ShrinQE Auth" <${fromEmail}>`,
+    to,
     subject: 'Password Reset OTP - ShrinQE',
-    htmlContent: `
+    html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #e0e0e0; border-radius: 10px;">
         <h2 style="color: #7C3AED; text-align: center;">ShrinQE</h2>
         <p>Hi ${name},</p>
@@ -37,7 +52,7 @@ export const sendResetPasswordEmail = async (to, otp, name) => {
         <p>This code is valid for <strong>10 minutes</strong>. If you did not request this, you can safely ignore this email.</p>
         <hr style="border: 0; border-top: 1px solid #eee; margin: 20px 0;">
         <p style="font-size: 12px; color: #888; text-align: center;">
-          Sent using Brevo API from ShrinQE URL Shortener <br>
+          Sent from ShrinQE URL Shortener <br>
           © 2024 ShrinQE Team
         </p>
       </div>
@@ -45,19 +60,11 @@ export const sendResetPasswordEmail = async (to, otp, name) => {
   };
 
   try {
-    const response = await axios.post('https://api.brevo.com/v3/smtp/email', data, {
-      headers: {
-        'api-key': BREVO_API_KEY,
-        'x-sib-api-key': BREVO_API_KEY, // Backup header
-        'Content-Type': 'application/json',
-        'Accept': 'application/json',
-      },
-    });
-
-    console.log('Email sent successfully via Brevo:', response.data.messageId);
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Email sent successfully via Brevo SMTP:', info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending email via Brevo:', error.response?.data || error.message);
+    console.error('Error sending email via Brevo SMTP:', error);
     throw new Error('Failed to send verification email');
   }
 };
