@@ -1,7 +1,9 @@
 import bcrypt from 'bcryptjs';
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { validationResult } from 'express-validator';
 import { User } from '../models/index.js';
+import { sendResetPasswordEmail } from '../services/emailService.js';
 
 const generateToken = (userId) => {
   return jwt.sign({ userId }, process.env.JWT_SECRET, {
@@ -182,6 +184,117 @@ export const updateProfile = async (req, res, next) => {
           createdAt: user.createdAt,
         },
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const forgotPassword = async (req, res, next) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      // Don't reveal if email exists or not for security, 
+      // but ShrinQE is usually developer-friendly, so we can be a bit more explicit or vague depending on preference.
+      // We'll go with the secure standard.
+      return res.json({
+        success: true,
+        message: 'If an account exists with this email, a reset code has been sent.',
+      });
+    }
+
+    if (user.provider !== 'local') {
+      return res.status(400).json({
+        success: false,
+        message: `This account uses ${user.provider} sign-in. Please use the ${user.provider} button to log in.`,
+      });
+    }
+
+    // Generate 6-digit OTP
+    const otp = Math.floor(100000 + Math.random() * 900000).toString();
+    const expiry = new Date(Date.now() + 10 * 60 * 1000); // 10 mins
+
+    user.resetPasswordOtp = otp;
+    user.resetPasswordExpires = expiry;
+    await user.save();
+
+    await sendResetPasswordEmail(user.email, otp, user.name);
+
+    res.json({
+      success: true,
+      message: 'A 6-digit verification code has been sent to your email.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyOtp = async (req, res, next) => {
+  try {
+    const { email, otp } = req.body;
+    const user = await User.findOne({ 
+      where: { 
+        email, 
+        resetPasswordOtp: otp 
+      } 
+    });
+
+    if (!user || user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification code.',
+      });
+    }
+
+    res.json({
+      success: true,
+      message: 'Code verified successfully.',
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const resetPassword = async (req, res, next) => {
+  try {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Validation failed',
+        errors: errors.array(),
+      });
+    }
+
+    const { email, otp, password } = req.body;
+    const user = await User.findOne({ 
+      where: { 
+        email, 
+        resetPasswordOtp: otp 
+      } 
+    });
+
+    if (!user || user.resetPasswordExpires < new Date()) {
+      return res.status(400).json({
+        success: false,
+        message: 'Invalid or expired verification code.',
+      });
+    }
+
+    // Hash new password
+    const salt = await bcrypt.genSalt(12);
+    user.passwordHash = await bcrypt.hash(password, salt);
+    
+    // Clear OTP
+    user.resetPasswordOtp = null;
+    user.resetPasswordExpires = null;
+    await user.save();
+
+    res.json({
+      success: true,
+      message: 'Your password has been reset successfully. You can now log in with your new password.',
     });
   } catch (error) {
     next(error);

@@ -1,7 +1,7 @@
 import { Router } from 'express';
 import { body } from 'express-validator';
 import passport from 'passport';
-import { signup, login, getMe, oauthCallback, updateProfile } from '../controllers/authController.js';
+import { signup, login, getMe, oauthCallback, updateProfile, forgotPassword, verifyOtp, resetPassword } from '../controllers/authController.js';
 import { authenticate } from '../middleware/auth.js';
 import { authLimiter } from '../middleware/rateLimiter.js';
 
@@ -41,6 +41,41 @@ router.post(
 // Profile
 router.get('/me', authenticate, getMe);
 router.patch('/me', authenticate, updateProfile);
+
+// Password Reset
+router.post(
+  '/forgot-password',
+  authLimiter,
+  [body('email').isEmail().normalizeEmail().withMessage('Valid email is required')],
+  forgotPassword
+);
+
+router.post(
+  '/verify-otp',
+  authLimiter,
+  [
+    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
+  ],
+  verifyOtp
+);
+
+router.post(
+  '/reset-password',
+  authLimiter,
+  [
+    body('email').isEmail().normalizeEmail().withMessage('Valid email is required'),
+    body('otp').isLength({ min: 6, max: 6 }).withMessage('OTP must be 6 digits'),
+    body('password')
+      .isLength({ min: 8 })
+      .withMessage('Password must be at least 8 characters')
+      .matches(/[A-Z]/)
+      .withMessage('Password must contain an uppercase letter')
+      .matches(/[0-9]/)
+      .withMessage('Password must contain a number'),
+  ],
+  resetPassword
+);
 
 // Google OAuth
 router.get(

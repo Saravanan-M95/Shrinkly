@@ -174,7 +174,10 @@ export default function LoginPage() {
                 }
               />
 
-              <TouchableOpacity style={styles.forgotLink}>
+              <TouchableOpacity 
+                style={styles.forgotLink}
+                onPress={() => router.push('/auth/forgot-password')}
+              >
                 <Text style={styles.forgotText}>Forgot password?</Text>
               </TouchableOpacity>
 
