@@ -50,7 +50,7 @@ export default function AdBanner({
         <View style={styles.adPlaceholder}>
           <Text style={styles.adIcon}>📢</Text>
           <Text style={styles.adText}>Google AdSense</Text>
-          <Text style={styles.adSubtext}>Space reserved for Shrinkly revenue</Text>
+          <Text style={styles.adSubtext}>Space reserved for ShrinQE revenue</Text>
         </View>
       </View>
     </Animated.View>

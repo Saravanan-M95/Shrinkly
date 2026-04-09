@@ -5,7 +5,7 @@ const ENV = {
     apiUrl: 'http://localhost:5000',
   },
   production: {
-    apiUrl: 'https://shrinkly-l9a2.onrender.com', // Update with your Render URL
+    apiUrl: 'https://api.shrinqe.com',
   },
 };
 
@@ -19,7 +19,7 @@ const getEnvVars = () => {
 const config = getEnvVars();
 
 export const API_URL = config.apiUrl;
-export const APP_NAME = 'Shrinkly';
+export const APP_NAME = 'ShrinQE';
 export const APP_TAGLINE = 'Shrink Your Links, Grow Your Reach';
 export const ADSENSE_PUBLISHER_ID = ''; // Add your AdSense publisher ID
 

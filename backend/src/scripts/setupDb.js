@@ -6,21 +6,21 @@ dotenv.config();
 const { Client } = pg;
 
 async function setup() {
-  // First, connect to 'postgres' database to create 'shrinkly' DB if it doesn't exist
+  // First, connect to 'postgres' database to create 'shrinqe' DB (ShrinQE) if it doesn't exist
   const client = new Client({
-    connectionString: process.env.DATABASE_URL.replace('shrinkly', 'postgres'),
+    connectionString: process.env.DATABASE_URL.replace('shrinqe', 'postgres'),
   });
 
   try {
     await client.connect();
     console.log('Connected to PostgreSQL server');
 
-    const res = await client.query("SELECT 1 FROM pg_database WHERE datname='shrinkly'");
+    const res = await client.query("SELECT 1 FROM pg_database WHERE datname='shrinqe'");
     if (res.rowCount === 0) {
-      await client.query('CREATE DATABASE shrinkly');
-      console.log('Database "shrinkly" created');
+      await client.query('CREATE DATABASE shrinqe');
+      console.log('Database "shrinqe" (ShrinQE) created');
     } else {
-      console.log('Database "shrinkly" already exists');
+      console.log('Database "shrinqe" (ShrinQE) already exists');
     }
   } catch (err) {
     console.error('Connection failed:', err.message);

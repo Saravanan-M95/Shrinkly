@@ -75,7 +75,7 @@ app.use(passport.initialize());
 app.get('/api/health', (req, res) => {
   res.json({
     success: true,
-    message: 'Shrinkly API is running',
+    message: 'ShrinQE API is running',
     timestamp: new Date().toISOString(),
   });
 });
@@ -104,7 +104,7 @@ const startServer = async () => {
     }
 
     app.listen(PORT, () => {
-      console.log(`🚀 Shrinkly API running on port ${PORT}`);
+      console.log(`🚀 ShrinQE API running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
     });
   } catch (error) {

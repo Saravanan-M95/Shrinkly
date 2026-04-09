@@ -52,7 +52,7 @@ export function AuthProvider({ children }) {
 
   const loadStoredToken = async () => {
     try {
-      const storedToken = await storage.getItem('shrinkly_token');
+      const storedToken = await storage.getItem('shrinqe_token');
       if (storedToken) {
         setAuthToken(storedToken);
         setToken(storedToken);
@@ -62,7 +62,7 @@ export function AuthProvider({ children }) {
       }
     } catch (err) {
       console.log('Token load error:', err);
-      await storage.removeItem('shrinkly_token');
+      await storage.removeItem('shrinqe_token');
       setAuthToken(null);
     } finally {
       setIsLoading(false);
@@ -78,7 +78,7 @@ export function AuthProvider({ children }) {
       setAuthToken(newToken);
       setToken(newToken);
       setUser(userData);
-      await storage.setItem('shrinkly_token', newToken);
+      await storage.setItem('shrinqe_token', newToken);
       
       return { success: true };
     } catch (err) {
@@ -97,7 +97,7 @@ export function AuthProvider({ children }) {
       setAuthToken(newToken);
       setToken(newToken);
       setUser(userData);
-      await storage.setItem('shrinkly_token', newToken);
+      await storage.setItem('shrinqe_token', newToken);
       
       return { success: true };
     } catch (err) {
@@ -112,7 +112,7 @@ export function AuthProvider({ children }) {
       setError(null);
       setAuthToken(oauthToken);
       setToken(oauthToken);
-      await storage.setItem('shrinkly_token', oauthToken);
+      await storage.setItem('shrinqe_token', oauthToken);
       
       const response = await authAPI.getMe();
       setUser(response.data.user);
@@ -130,7 +130,7 @@ export function AuthProvider({ children }) {
     setToken(null);
     setAuthToken(null);
     setError(null);
-    await storage.removeItem('shrinkly_token');
+    await storage.removeItem('shrinqe_token');
   }, []);
 
   const clearError = useCallback(() => setError(null), []);

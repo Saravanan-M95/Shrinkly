@@ -352,14 +352,14 @@ export default function HomePage() {
             Frequently Asked <Text style={styles.sectionTitleAccent}>Questions</Text>
           </Text>
           <Text style={styles.sectionSubtitle}>
-            Find answers to common questions about Shrinkly and our services
+            Find answers to common questions about ShrinQE and our services
           </Text>
 
           <View style={styles.faqGrid}>
             {[
               {
-                q: 'Is Shrinkly free to use?',
-                a: 'Yes! Shrinkly is 100% free for everyone. You can shorten as many URLs as you like and access basic analytics without any cost.',
+                q: 'Is ShrinQE free to use?',
+                a: 'Yes! ShrinQE is 100% free for everyone. You can shorten as many URLs as you like and access basic analytics without any cost.',
               },
               {
                 q: 'How do I earn revenue with my links?',
@@ -391,7 +391,7 @@ export default function HomePage() {
             Ready to Start Shrinking?
           </Text>
           <Text style={styles.ctaSubtitle}>
-            Join thousands of users who trust Shrinkly for their link management.
+            Join thousands of users who trust ShrinQE for their link management.
           </Text>
           <Button
             title="Get Started — It's Free"

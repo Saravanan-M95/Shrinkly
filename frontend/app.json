@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "Shrinkly",
-    "slug": "shrinkly",
+    "name": "ShrinQE",
+    "slug": "shrinqe",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "shrinkly",
+    "scheme": "shrinqe",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
     "splash": {
@@ -15,7 +15,7 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.shrinkly.app"
+      "bundleIdentifier": "com.shrinqe.app"
     },
     "android": {
       "adaptiveIcon": {
@@ -23,7 +23,7 @@
         "backgroundColor": "#0F0D15"
       },
       "edgeToEdgeEnabled": true,
-      "package": "com.shrinkly.app"
+      "package": "com.shrinqe.app"
     },
     "web": {
       "bundler": "metro",

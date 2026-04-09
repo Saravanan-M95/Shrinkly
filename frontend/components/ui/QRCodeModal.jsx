@@ -18,7 +18,7 @@ export default function QRCodeModal({ visible, onClose, link }) {
     if (Platform.OS === 'web') {
       const linkElement = document.createElement('a');
       linkElement.href = link.qrCode;
-      linkElement.download = `shrinkly-qr-${link.shortCode}.png`;
+      linkElement.download = `shrinQE-qr-${link.shortCode}.png`;
       document.body.appendChild(linkElement);
       linkElement.click();
       document.body.removeChild(linkElement);
@@ -26,7 +26,7 @@ export default function QRCodeModal({ visible, onClose, link }) {
       try {
         const isAvailable = await Sharing.isAvailableAsync();
         if (isAvailable) {
-          const fileUri = `${FileSystem.cacheDirectory}shrinkly-qr-${link.shortCode}.png`;
+          const fileUri = `${FileSystem.cacheDirectory}shrinQE-qr-${link.shortCode}.png`;
           const base64Data = link.qrCode.split('base64,')[1];
           await FileSystem.writeAsStringAsync(fileUri, base64Data, { encoding: FileSystem.EncodingType.Base64 });
           await Sharing.shareAsync(fileUri);

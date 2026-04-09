@@ -97,7 +97,7 @@ export default function InterstitialPage() {
                 <LinearGradient colors={Colors.gradientPrimary} style={styles.logoIcon}>
                   <Ionicons name="link" size={20} color="#fff" />
                 </LinearGradient>
-                <Text style={styles.logoText}>Shrinkly</Text>
+                <Text style={styles.logoText}>ShrinQE</Text>
               </View>
 
               {/* Progress */}
@@ -156,7 +156,7 @@ export default function InterstitialPage() {
               <View style={styles.safetyRow}>
                 <Ionicons name="shield-checkmark-outline" size={14} color={Colors.textMuted} />
                 <Text style={styles.safetyText}>
-                  This link was shortened with Shrinkly. We are not responsible for external content.
+                  This link was shortened with ShrinQE. We are not responsible for external content.
                 </Text>
               </View>
             </View>
@@ -170,10 +170,10 @@ export default function InterstitialPage() {
               <View style={styles.infoCard}>
                 <View style={styles.infoIconRow}>
                   <Ionicons name="information-circle-outline" size={24} color={Colors.primaryLight} />
-                  <Text style={styles.infoTitle}>About Shrinkly</Text>
+                  <Text style={styles.infoTitle}>About ShrinQE</Text>
                 </View>
                 <Text style={styles.infoText}>
-                  Shrinkly is a high-performance URL shortening service designed for clarity and efficiency. 
+                  ShrinQE is a high-performance URL shortening service designed for clarity and efficiency. 
                   We transform long, complex web addresses into short, manageable links that are easy to share and track. 
                   Our mission is to provide a seamless experience for both link creators and their audience while prioritizing security and transparency.
                 </Text>
@@ -185,7 +185,7 @@ export default function InterstitialPage() {
                   <Text style={styles.infoTitle}>Safety & Security Center</Text>
                 </View>
                 <Text style={styles.infoText}>
-                  Your safety is our top priority. Every link shortened through Shrinkly is automatically scanned for potential malicious content. 
+                  Your safety is our top priority. Every link shortened through ShrinQE is automatically scanned for potential malicious content. 
                   However, we always recommend verifying the destination URL before proceeding.
                 </Text>
                 <View style={styles.bulletRow}>
@@ -209,7 +209,7 @@ export default function InterstitialPage() {
                 </View>
                 <Text style={styles.infoText}>
                   This brief 5-second pause allows our automated systems to verify the destination link's safety status and ensures that our service remains sustainable through verified ad delivery. 
-                  This support helps us keep Shrinkly free for everyone while providing powerful analytics tools.
+                  This support helps us keep ShrinQE free for everyone while providing powerful analytics tools.
                 </Text>
               </View>
 
@@ -239,7 +239,7 @@ export default function InterstitialPage() {
 
             {/* Bottom Text */}
             <Text style={styles.footerText}>
-              Powered by <Text style={{ color: Colors.primaryLight, fontWeight: '700' }}>Shrinkly</Text> — Free URL Shortener
+              Powered by <Text style={{ color: Colors.primaryLight, fontWeight: '700' }}>ShrinQE</Text> — Free URL Shortener
             </Text>
             
             <View style={{ height: 40 }} />

@@ -16,7 +16,7 @@ export default function Footer() {
               <View style={styles.logoIcon}>
                 <Ionicons name="link" size={16} color="#fff" />
               </View>
-              <Text style={styles.logo}>Shrinkly</Text>
+              <Text style={styles.logo}>ShrinQE</Text>
             </View>
             <Text style={styles.brandDesc}>
               Shorten, share, and track your links with powerful analytics and ad monetization.
@@ -49,7 +49,7 @@ export default function Footer() {
 
         <View style={styles.bottomBar}>
           <Text style={styles.copyright}>
-            © {new Date().getFullYear()} Shrinkly. All rights reserved.
+            © {new Date().getFullYear()} ShrinQE. All rights reserved.
           </Text>
           <View style={styles.socialIcons}>
             <TouchableOpacity style={styles.socialBtn}>

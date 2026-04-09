@@ -1,7 +1,7 @@
 {
-  "name": "shrinkly-backend",
+  "name": "shrinqe-backend",
   "version": "1.0.0",
-  "description": "Shrinkly URL Shortener API",
+  "description": "ShrinQE URL Shortener API",
   "main": "src/server.js",
   "type": "module",
   "scripts": {

@@ -45,7 +45,7 @@ export default function Header() {
           >
             <Ionicons name="link" size={18} color="#fff" />
           </LinearGradient>
-          <Text style={styles.logo}>Shrinkly</Text>
+          <Text style={styles.logo}>ShrinQE</Text>
         </TouchableOpacity>
 
         {!isMobile && (

@@ -1,4 +1,4 @@
-// Shrinkly Design System
+// ShrinQE Design System
 export const Colors = {
   // Primary palette
   primary: '#7C3AED',
