@@ -59,7 +59,7 @@ export default function ResetPasswordPage() {
           onChangeText={setPassword}
           placeholder="At least 8 characters"
           secureTextEntry
-          icon="lock-closed-outline"
+          icon={<Ionicons name="lock-closed-outline" size={20} color={Colors.textMuted} />}
         />
 
         <Input
@@ -68,7 +68,7 @@ export default function ResetPasswordPage() {
           onChangeText={setConfirmPassword}
           placeholder="Repeat your password"
           secureTextEntry
-          icon="shield-outline"
+          icon={<Ionicons name="shield-outline" size={20} color={Colors.textMuted} />}
         />
 
         <Button

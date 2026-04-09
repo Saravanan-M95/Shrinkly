@@ -62,7 +62,7 @@ export default function ForgotPasswordPage() {
           placeholder="e.g. yourname@example.com"
           keyboardType="email-address"
           autoCapitalize="none"
-          icon="mail-outline"
+          icon={<Ionicons name="mail-outline" size={20} color={Colors.textMuted} />}
         />
 
         <Button

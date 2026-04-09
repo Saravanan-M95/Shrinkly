@@ -62,7 +62,7 @@ export default function VerifyOtpPage() {
           placeholder="000000"
           keyboardType="number-pad"
           maxLength={6}
-          icon="key-outline"
+          icon={<Ionicons name="key-outline" size={20} color={Colors.textMuted} />}
         />
 
         <Button
