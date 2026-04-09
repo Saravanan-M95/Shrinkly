@@ -14,6 +14,7 @@ export default function ResetPasswordPage() {
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const handleReset = async () => {
     if (!password || password.length < 8) {
@@ -30,9 +31,7 @@ export default function ResetPasswordPage() {
     try {
       const res = await authAPI.resetPassword(email, otp, password);
       if (res.success) {
-        Alert.alert('Success', 'Your password has been reset successfully. Please log in with your new password.', [
-          { text: 'Log In', onPress: () => router.replace('/login') }
-        ]);
+        setIsSuccess(true);
       }
     } catch (err) {
       Alert.alert('Error', err.message || 'Failed to reset password. Please try again.');
@@ -40,6 +39,31 @@ export default function ResetPasswordPage() {
       setIsLoading(false);
     }
   };
+
+  if (isSuccess) {
+    return (
+      <View style={styles.container}>
+        <View style={styles.content}>
+          <Card variant="glass" style={styles.card}>
+            <View style={[styles.iconContainer, { backgroundColor: 'rgba(16, 185, 129, 0.1)' }]}>
+              <Ionicons name="checkmark-circle-outline" size={48} color="#10B981" />
+            </View>
+            
+            <Text style={styles.title}>Password Reset!</Text>
+            <Text style={styles.subtitle}>
+              Your password has been reset successfully. You can now use your new password to sign in to your account.
+            </Text>
+
+            <Button
+              title="Back to Login"
+              onPress={() => router.replace('/login')}
+              style={styles.submitBtn}
+            />
+          </Card>
+        </View>
+      </View>
+    );
+  }
 
   return (
     <ScrollView style={styles.container} contentContainerStyle={styles.content}>
