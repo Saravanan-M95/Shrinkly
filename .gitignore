@@ -21,7 +21,7 @@ out/
 web-build/
 
 # Backend
-shrinkly.sqlite
+shrinqe.sqlite
 
 # Misc
 .DS_Store

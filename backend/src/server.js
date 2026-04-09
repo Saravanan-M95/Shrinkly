@@ -30,6 +30,8 @@ app.use(helmet({
 // CORS configuration
 const allowedOrigins = [
   process.env.FRONTEND_URL,
+  'https://shrinqe.com',
+  'https://www.shrinqe.com',
   'http://localhost:8081',
   'http://localhost:8082',
   'http://localhost:19006',
