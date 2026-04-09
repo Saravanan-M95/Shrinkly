@@ -8,8 +8,8 @@ import axios from 'axios';
  * @param {string} name - User's name
  */
 export const sendResetPasswordEmail = async (to, otp, name) => {
-  const BREVO_API_KEY = process.env.BREVO_API_KEY;
-  const SENDER_EMAIL = process.env.SENDER_EMAIL || 'saravanan619.m@gmail.com';
+  const BREVO_API_KEY = (process.env.BREVO_API_KEY || '').trim();
+  const SENDER_EMAIL = (process.env.SENDER_EMAIL || 'saravanan619.m@gmail.com').trim();
   const SENDER_NAME = 'ShrinQE Auth';
 
   if (!BREVO_API_KEY) {
@@ -43,6 +43,7 @@ export const sendResetPasswordEmail = async (to, otp, name) => {
     const response = await axios.post('https://api.brevo.com/v3/smtp/email', data, {
       headers: {
         'api-key': BREVO_API_KEY,
+        'x-sib-api-key': BREVO_API_KEY, // Backup header
         'Content-Type': 'application/json',
         'Accept': 'application/json',
       },
