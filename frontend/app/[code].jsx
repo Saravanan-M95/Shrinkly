@@ -131,29 +131,17 @@ export default function InterstitialPage() {
                 </View>
               </View>
 
-              {/* Redirect Button */}
-              <TouchableOpacity
-                onPress={handleRedirect}
-                disabled={!canSkip}
-                activeOpacity={0.8}
-                style={{ width: '100%' }}
-              >
-                <LinearGradient
-                  colors={canSkip ? Colors.gradientPrimary : ['#4A4458', '#3D3652']}
-                  start={{ x: 0, y: 0 }}
-                  end={{ x: 1, y: 0 }}
-                  style={[styles.redirectBtn, !canSkip && styles.redirectBtnDisabled]}
-                >
-                  <Ionicons
-                    name={canSkip ? 'arrow-forward-circle' : 'time-outline'}
-                    size={22}
-                    color="#fff"
-                  />
-                  <Text style={styles.redirectBtnText}>
-                    {canSkip ? 'Continue to Destination' : `Wait ${countdown} seconds...`}
-                  </Text>
-                </LinearGradient>
-              </TouchableOpacity>
+              {/* Auto-Redirect Status */}
+              <View style={styles.redirectStatus}>
+                <Ionicons
+                  name={canSkip ? 'arrow-forward-circle' : 'time-outline'}
+                  size={20}
+                  color={canSkip ? Colors.success : Colors.textMuted}
+                />
+                <Text style={[styles.redirectStatusText, canSkip && { color: Colors.success }]}>
+                  {canSkip ? 'Redirecting now...' : `Auto-redirecting in ${countdown}s`}
+                </Text>
+              </View>
 
               {/* Safety Notice */}
               <View style={styles.safetyRow}>
@@ -287,13 +275,11 @@ const styles = StyleSheet.create({
   destinationLabel: { color: Colors.textMuted, fontSize: FontSizes.xs, fontWeight: '600', marginBottom: Spacing.xs },
   destinationUrl: { color: Colors.textPrimary, fontSize: FontSizes.sm, fontWeight: '500', lineHeight: 20 },
 
-  redirectBtn: {
+  redirectStatus: {
     flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: Spacing.sm,
-    paddingVertical: Spacing.md + 2, paddingHorizontal: Spacing.xl,
-    borderRadius: BorderRadius.md, width: '100%',
+    paddingVertical: Spacing.md, width: '100%',
   },
-  redirectBtnDisabled: { opacity: 0.7 },
-  redirectBtnText: { color: '#fff', fontSize: FontSizes.md, fontWeight: '700' },
+  redirectStatusText: { color: Colors.textMuted, fontSize: FontSizes.sm, fontWeight: '600' },
 
   safetyRow: { flexDirection: 'row', alignItems: 'center', gap: Spacing.xs, marginTop: Spacing.md },
   safetyText: { color: Colors.textMuted, fontSize: FontSizes.xs, flex: 1, lineHeight: 16 },
