@@ -21,7 +21,6 @@ const config = getEnvVars();
 export const API_URL = config.apiUrl;
 export const APP_NAME = 'ShrinQE';
 export const APP_TAGLINE = 'Shrink Your Links, Grow Your Reach';
-export const ADSENSE_PUBLISHER_ID = 'ca-pub-4000404993258529'; // ShrinQE AdSense ID
 
 // OAuth redirect URIs
 export const GOOGLE_OAUTH_URL = `${API_URL}/api/auth/google`;

@@ -17,7 +17,6 @@ import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
-import AdBanner from '../components/ui/AdBanner';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
 import { Colors, Spacing, FontSizes, BorderRadius, Shadows } from '../constants/theme';
@@ -123,11 +122,6 @@ export default function HomePage() {
       desc: 'Instant redirects with global CDN. Your links never slow down.',
       color: Colors.success,
     },
-    {
-      icon: 'cash-outline',
-      title: 'Earn Revenue',
-      desc: 'Monetize your links with built-in ad integration and earn passively.',
-      color: Colors.warning,
     },
     {
       icon: 'shield-checkmark-outline',
@@ -194,7 +188,7 @@ export default function HomePage() {
             </Text>
 
             <Text style={[styles.heroSubtitle, isMobile && styles.heroSubtitleMobile]}>
-              Create short, powerful links that track clicks, generate revenue,{'\n'}
+              Create short, powerful links that track clicks, manage your digital assets,
               and give you full control over your online presence.
             </Text>
 
@@ -305,8 +299,7 @@ export default function HomePage() {
           </Animated.View>
         </LinearGradient>
 
-        {/* Ad Banner */}
-        <AdBanner size="leaderboard" />
+
 
         {/* Stats Section */}
         <View style={styles.statsSection}>
@@ -327,7 +320,7 @@ export default function HomePage() {
             <Text style={styles.sectionTitleAccent}>Succeed</Text>
           </Text>
           <Text style={styles.sectionSubtitle}>
-            Powerful tools to shorten, track, and monetize your links
+            Powerful tools to shorten and track your links
           </Text>
 
           <View style={[styles.featuresGrid, isMobile && styles.featuresGridMobile]}>
@@ -343,8 +336,7 @@ export default function HomePage() {
           </View>
         </View>
 
-        {/* Ad Banner */}
-        <AdBanner size="rectangle" />
+
 
         {/* FAQ Section */}
         <View style={styles.faqSection}>
@@ -357,14 +349,6 @@ export default function HomePage() {
 
           <View style={styles.faqGrid}>
             {[
-              {
-                q: 'Is ShrinQE free to use?',
-                a: 'Yes! ShrinQE is 100% free for everyone. You can shorten as many URLs as you like and access basic analytics without any cost.',
-              },
-              {
-                q: 'How do I earn revenue with my links?',
-                a: 'By enabling monetization in your dashboard, your links will show a brief interstitial page with high-quality ads. You earn revenue for every verified view.',
-              },
               {
                 q: 'Are shortened links safe?',
                 a: 'Absolutely. We use automated safety scanners to check every link for malicious content or phishing attempts to protect our users.',

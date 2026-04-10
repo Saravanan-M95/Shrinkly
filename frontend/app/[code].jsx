@@ -5,7 +5,7 @@ import {
 import { useLocalSearchParams } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
 import { Ionicons } from '@expo/vector-icons';
-import AdBanner from '../components/ui/AdBanner';
+
 import { redirectAPI } from '../services/api';
 import { Colors, Spacing, FontSizes, BorderRadius, Shadows } from '../constants/theme';
 
@@ -91,8 +91,7 @@ export default function InterstitialPage() {
           showsVerticalScrollIndicator={false}
         >
           <Animated.View style={[styles.content, { opacity: fadeAnim }]}>
-            {/* Top Ad */}
-            <AdBanner size="leaderboard" />
+
 
             {/* Main Card */}
             <View style={[styles.card, isMobile && styles.cardMobile]}>
@@ -165,8 +164,7 @@ export default function InterstitialPage() {
               </View>
             </View>
 
-            {/* Rectangle Ad */}
-            <AdBanner size="rectangle" />
+
 
             {/* --- NEW PUBLISHER CONTENT --- */}
             

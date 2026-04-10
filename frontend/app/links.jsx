@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons';
 import Header from '../components/layout/Header';
 import Footer from '../components/layout/Footer';
 import Card from '../components/ui/Card';
-import AdBanner from '../components/ui/AdBanner';
+
 import QRCodeModal from '../components/ui/QRCodeModal';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
@@ -169,8 +169,7 @@ export default function LinksPage() {
             </TouchableOpacity>
           </View>
 
-          {/* Ad */}
-          <AdBanner size="leaderboard" />
+
 
           {/* Links List */}
           {isLoading ? (
@@ -348,7 +347,7 @@ export default function LinksPage() {
             </View>
           )}
 
-          <AdBanner size="leaderboard" />
+
         </Animated.View>
         <Footer />
       </ScrollView>

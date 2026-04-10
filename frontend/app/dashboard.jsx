@@ -12,7 +12,7 @@ import Footer from '../components/layout/Footer';
 import Card from '../components/ui/Card';
 import Button from '../components/ui/Button';
 import Input from '../components/ui/Input';
-import AdBanner from '../components/ui/AdBanner';
+
 import QRCodeModal from '../components/ui/QRCodeModal';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
@@ -212,8 +212,7 @@ export default function DashboardPage() {
             )}
           </Card>
 
-          {/* Ad Banner */}
-          <AdBanner size="leaderboard" />
+
 
           {/* Stats Grid */}
           <View style={[styles.statsGrid, isMobile && styles.statsGridMobile]}>
@@ -320,10 +319,9 @@ export default function DashboardPage() {
               )}
             </View>
 
-            {/* Sidebar Ad */}
+            {/* Sidebar */}
             {!isMobile && (
               <View style={styles.sidebar}>
-                <AdBanner size="rectangle" />
                 {/* Top performing link */}
                 {stats.topUrl && (
                   <Card variant="glass" style={styles.topUrlCard}>
@@ -336,8 +334,7 @@ export default function DashboardPage() {
             )}
           </View>
 
-          {/* Bottom Ad */}
-          <AdBanner size="leaderboard" />
+
         </Animated.View>
 
         <Footer />

@@ -3,8 +3,7 @@ import React from 'react';
 
 /**
  * Root HTML template for the Expo Router web application.
- * This is the ONLY reliable way to put static tags in the <head>
- * so that Google AdSense can verify the site.
+ * This is the ONLY reliable way to put static tags in the <head>.
  */
 export default function RootHTML({ children }: { children: React.ReactNode }) {
   return (
@@ -16,13 +15,6 @@ export default function RootHTML({ children }: { children: React.ReactNode }) {
 
         {/* 🎨 Fonts */}
         <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
-
-        {/* 🚀 Google AdSense Verification - Injected at build time */}
-        <script
-          async
-          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4000404993258529"
-          crossOrigin="anonymous"
-        />
 
         {/* Reset styles for the web */}
         <ScrollViewStyleReset />
