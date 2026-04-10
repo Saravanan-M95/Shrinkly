@@ -110,18 +110,27 @@ const startServer = async () => {
       console.log(`🚀 ShrinQE API running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
       
-      // Render Keep-Alive: Ping the health endpoint every 14 minutes
-      // to prevent the free tier from spinning down
+      // Render Keep-Alive: Ping the health endpoint every 5 minutes
+      // 14 minutes was too close to the 15-minute threshold; 5 minutes is standard.
       if (process.env.NODE_ENV === 'production') {
         const url = process.env.RENDER_EXTERNAL_URL || 'https://api.shrinqe.com';
+        console.log(`🔌 Initializing keep-alive for: ${url}`);
+        
         setInterval(async () => {
           try {
             const { data } = await axios.get(`${url}/api/health`);
-            console.log('💓 Keep-alive heartbeat:', data.timestamp);
+            console.log('💓 Keep-alive heartbeat successful:', data.timestamp);
           } catch (err) {
-            console.error('💔 Keep-alive error:', err.message);
+            console.error('💔 Keep-alive heartbeat failed:', err.message);
+            // If the primary URL fails, attempt to ping localhost as a backup
+            try {
+              await axios.get(`http://localhost:${PORT}/api/health`);
+              console.log('💓 Keep-alive heartbeat successful (localhost fallback)');
+            } catch (localErr) {
+              console.error('💀 Keep-alive critical failure:', localErr.message);
+            }
           }
-        }, 14 * 60 * 1000); // 14 minutes
+        }, 5 * 60 * 1000); // 5 minutes
       }
     });
   } catch (error) {
