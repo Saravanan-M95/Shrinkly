@@ -213,19 +213,32 @@ export default function DashboardPage() {
           </Card>
 
 
-
           {/* Stats Grid */}
-          <View style={[styles.statsGrid, isMobile && styles.statsGridMobile]}>
-            {statCards.map((stat, i) => (
-              <Card key={i} variant="glass" style={[styles.statCard, isMobile && styles.statCardMobile]}>
-                <View style={[styles.statIconBg, { backgroundColor: stat.bg }]}>
-                  <Ionicons name={stat.icon} size={22} color={stat.color} />
+          {isMobile ? (
+            <View style={styles.statsStripMobile}>
+              {statCards.map((stat, i) => (
+                <View key={i} style={styles.statsStripItem}>
+                  <View style={[styles.statsStripIcon, { backgroundColor: stat.bg }]}>
+                    <Ionicons name={stat.icon} size={18} color={stat.color} />
+                  </View>
+                  <Text style={styles.statsStripValue}>{isLoading ? '—' : stat.value.toLocaleString()}</Text>
+                  <Text style={styles.statsStripLabel}>{stat.label}</Text>
                 </View>
-                <Text style={styles.statValue}>{isLoading ? '—' : stat.value.toLocaleString()}</Text>
-                <Text style={styles.statLabel}>{stat.label}</Text>
-              </Card>
-            ))}
-          </View>
+              ))}
+            </View>
+          ) : (
+            <View style={styles.statsGrid}>
+              {statCards.map((stat, i) => (
+                <Card key={i} variant="glass" style={styles.statCard}>
+                  <View style={[styles.statIconBg, { backgroundColor: stat.bg }]}>
+                    <Ionicons name={stat.icon} size={22} color={stat.color} />
+                  </View>
+                  <Text style={styles.statValue}>{isLoading ? '—' : stat.value.toLocaleString()}</Text>
+                  <Text style={styles.statLabel}>{stat.label}</Text>
+                </Card>
+              ))}
+            </View>
+          )}
 
           {/* Content with sidebar ad */}
           <View style={[styles.mainContent, isMobile && styles.mainContentMobile]}>
@@ -396,12 +409,49 @@ const styles = StyleSheet.create({
   copyLink: { color: Colors.primaryLight, fontWeight: '700', fontSize: FontSizes.sm },
 
   statsGrid: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg, flexWrap: 'wrap' },
-  statsGridMobile: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'space-between' },
   statCard: { flex: 1, minWidth: 140, alignItems: 'center', padding: Spacing.lg },
-  statCardMobile: { flex: 0, width: '48%', minWidth: 0, padding: Spacing.md, marginBottom: Spacing.xs },
   statIconBg: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
   statValue: { fontSize: FontSizes.xxl, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
   statLabel: { fontSize: FontSizes.xs, color: Colors.textMuted, marginTop: Spacing.xs, fontWeight: '500', textAlign: 'center' },
+
+  statsStripMobile: {
+    flexDirection: 'row',
+    backgroundColor: Colors.glass,
+    borderRadius: BorderRadius.lg,
+    borderWidth: 1,
+    borderColor: Colors.glassBorder,
+    marginBottom: Spacing.lg,
+    overflow: 'hidden',
+  },
+  statsStripItem: {
+    flex: 1,
+    alignItems: 'center',
+    paddingVertical: Spacing.md,
+    paddingHorizontal: Spacing.xs,
+    borderRightWidth: 1,
+    borderRightColor: Colors.glassBorder,
+  },
+  statsStripIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: Spacing.xs,
+  },
+  statsStripValue: {
+    fontSize: FontSizes.xl,
+    fontWeight: '800',
+    color: Colors.textPrimary,
+    letterSpacing: -0.5,
+  },
+  statsStripLabel: {
+    fontSize: 10,
+    color: Colors.textMuted,
+    marginTop: 2,
+    fontWeight: '500',
+    textAlign: 'center',
+  },
 
   mainContent: { flexDirection: 'row', gap: Spacing.lg },
   mainContentMobile: { flexDirection: 'column' },
