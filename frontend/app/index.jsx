@@ -122,7 +122,6 @@ export default function HomePage() {
       desc: 'Instant redirects with global CDN. Your links never slow down.',
       color: Colors.success,
     },
-    },
     {
       icon: 'shield-checkmark-outline',
       title: 'Secure & Reliable',

@@ -396,12 +396,12 @@ const styles = StyleSheet.create({
   copyLink: { color: Colors.primaryLight, fontWeight: '700', fontSize: FontSizes.sm },
 
   statsGrid: { flexDirection: 'row', gap: Spacing.md, marginBottom: Spacing.lg, flexWrap: 'wrap' },
-  statsGridMobile: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm },
+  statsGridMobile: { flexDirection: 'row', flexWrap: 'wrap', gap: Spacing.sm, justifyContent: 'space-between' },
   statCard: { flex: 1, minWidth: 140, alignItems: 'center', padding: Spacing.lg },
-  statCardMobile: { flex: 0, width: '47%', minWidth: 0 },
-  statIconBg: { width: 48, height: 48, borderRadius: 24, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
+  statCardMobile: { flex: 0, width: '48%', minWidth: 0, padding: Spacing.md, marginBottom: Spacing.xs },
+  statIconBg: { width: 44, height: 44, borderRadius: 22, alignItems: 'center', justifyContent: 'center', marginBottom: Spacing.sm },
   statValue: { fontSize: FontSizes.xxl, fontWeight: '800', color: Colors.textPrimary, letterSpacing: -0.5 },
-  statLabel: { fontSize: FontSizes.xs, color: Colors.textMuted, marginTop: Spacing.xs, fontWeight: '500' },
+  statLabel: { fontSize: FontSizes.xs, color: Colors.textMuted, marginTop: Spacing.xs, fontWeight: '500', textAlign: 'center' },
 
   mainContent: { flexDirection: 'row', gap: Spacing.lg },
   mainContentMobile: { flexDirection: 'column' },
