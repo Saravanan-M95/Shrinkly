@@ -30,7 +30,18 @@ export default function ForgotPasswordPage() {
         });
       }
     } catch (err) {
-      Alert.alert('Error', err.message || 'Failed to request reset code.');
+      if (err.status === 404) {
+        Alert.alert(
+          'Account Not Found',
+          err.message,
+          [
+            { text: 'Cancel', style: 'cancel' },
+            { text: 'Sign Up', onPress: () => router.push('/signup') },
+          ]
+        );
+      } else {
+        Alert.alert('Error', err.message || 'Failed to request reset code.');
+      }
     } finally {
       setIsLoading(false);
     }

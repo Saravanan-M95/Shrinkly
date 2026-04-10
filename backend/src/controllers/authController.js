@@ -196,19 +196,9 @@ export const forgotPassword = async (req, res, next) => {
     const user = await User.findOne({ where: { email } });
 
     if (!user) {
-      // Don't reveal if email exists or not for security, 
-      // but ShrinQE is usually developer-friendly, so we can be a bit more explicit or vague depending on preference.
-      // We'll go with the secure standard.
-      return res.json({
-        success: true,
-        message: 'If an account exists with this email, a reset code has been sent.',
-      });
-    }
-
-    if (user.provider !== 'local') {
-      return res.status(400).json({
+      return res.status(404).json({
         success: false,
-        message: `This account uses ${user.provider} sign-in. Please use the ${user.provider} button to log in.`,
+        message: 'Account not found. Please check your email address or sign up for a new account.',
       });
     }
 
