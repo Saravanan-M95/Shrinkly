@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
 import morgan from 'morgan';
+import axios from 'axios';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import dotenv from 'dotenv';
@@ -108,6 +109,20 @@ const startServer = async () => {
     app.listen(PORT, () => {
       console.log(`🚀 ShrinQE API running on port ${PORT}`);
       console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+      
+      // Render Keep-Alive: Ping the health endpoint every 14 minutes
+      // to prevent the free tier from spinning down
+      if (process.env.NODE_ENV === 'production') {
+        const url = process.env.RENDER_EXTERNAL_URL || 'https://api.shrinqe.com';
+        setInterval(async () => {
+          try {
+            const { data } = await axios.get(`${url}/api/health`);
+            console.log('💓 Keep-alive heartbeat:', data.timestamp);
+          } catch (err) {
+            console.error('💔 Keep-alive error:', err.message);
+          }
+        }, 14 * 60 * 1000); // 14 minutes
+      }
     });
   } catch (error) {
     console.error('❌ Unable to start server:', error);

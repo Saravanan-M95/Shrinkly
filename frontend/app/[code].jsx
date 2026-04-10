@@ -38,8 +38,12 @@ export default function InterstitialPage() {
       return () => clearTimeout(timer);
     } else {
       setCanSkip(true);
+      // Automatically redirect after countdown finishes
+      if (redirectInfo?.originalUrl) {
+        handleRedirect();
+      }
     }
-  }, [countdown]);
+  }, [countdown, redirectInfo]);
 
   const loadRedirectInfo = async () => {
     try {
