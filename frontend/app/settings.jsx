@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  View, Text, StyleSheet, ScrollView, Animated, useWindowDimensions,
+  View, Text, StyleSheet, ScrollView, Animated, useWindowDimensions, Image
 } from 'react-native';
 import { useRouter, useRootNavigationState } from 'expo-router';
 import { LinearGradient } from 'expo-linear-gradient';
@@ -14,7 +14,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { Colors, Spacing, FontSizes, BorderRadius } from '../constants/theme';
 
 export default function SettingsPage() {
-  const { user, isAuthenticated, logout, isLoading: isAuthLoading } = useAuth();
+  const { user, isAuthenticated, logout, isLoading: isAuthLoading, updateProfile } = useAuth();
   const router = useRouter();
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
@@ -22,6 +22,7 @@ export default function SettingsPage() {
   const [name, setName] = useState(user?.name || '');
   const [isUpdating, setIsUpdating] = useState(false);
   const [updateMessage, setUpdateMessage] = useState('');
+  const [imageError, setImageError] = useState(false);
 
   const fadeAnim = useRef(new Animated.Value(0)).current;
 
@@ -37,8 +38,12 @@ export default function SettingsPage() {
     setIsUpdating(true);
     setUpdateMessage('');
     try {
-      // Would call API here
-      setUpdateMessage('Profile updated successfully');
+      const result = await updateProfile({ name: name.trim() });
+      if (result.success) {
+        setUpdateMessage('Profile updated successfully');
+      } else {
+        setUpdateMessage(result.message || 'Failed to update profile');
+      }
     } catch (err) {
       setUpdateMessage('Failed to update profile');
     } finally {
@@ -69,11 +74,23 @@ export default function SettingsPage() {
             </View>
 
             <View style={styles.profileInfo}>
-              <LinearGradient colors={Colors.gradientPrimary} style={styles.avatarLg}>
-                <Text style={styles.avatarText}>{user?.name?.charAt(0)?.toUpperCase() || 'U'}</Text>
-              </LinearGradient>
+              {user?.avatarUrl && !imageError ? (
+                <View style={styles.avatarLgImageContainer}>
+                  <Image 
+                    source={{ uri: user.avatarUrl }} 
+                    style={{ width: 64, height: 64, borderRadius: 32 }}
+                    onError={() => setImageError(true)}
+                  />
+                </View>
+              ) : (
+                <LinearGradient colors={Colors.gradientPrimary} style={styles.avatarLg}>
+                  <Text style={styles.avatarText}>
+                    {user?.name?.trim() ? user.name.trim().charAt(0).toUpperCase() : user?.email?.charAt(0).toUpperCase() || 'U'}
+                  </Text>
+                </LinearGradient>
+              )}
               <View style={styles.profileDetails}>
-                <Text style={styles.profileName}>{user?.name}</Text>
+                <Text style={styles.profileName}>{user?.name || user?.email?.split('@')[0]}</Text>
                 <Text style={styles.profileEmail}>{user?.email}</Text>
                 <View style={styles.providerBadge}>
                   <Ionicons

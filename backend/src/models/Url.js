@@ -3,17 +3,13 @@ import sequelize from '../config/database.js';
 
 const Url = sequelize.define('Url', {
   id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true,
   },
   userId: {
-    type: DataTypes.UUID,
+    type: DataTypes.INTEGER,
     allowNull: false,
-    references: {
-      model: 'users',
-      key: 'id',
-    },
   },
   shortCode: {
     type: DataTypes.STRING(20),

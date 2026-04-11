@@ -19,17 +19,18 @@ export default function Footer() {
               <Text style={styles.logo}>ShrinQE</Text>
             </View>
             <Text style={styles.brandDesc}>
-              Shorten, share, and track your links with powerful analytics and ad monetization.
+              Shrink your links and your images. URL shortener with analytics, plus 13 free image tools — all in one place.
             </Text>
           </View>
 
           <View style={styles.linksGroup}>
-            <Text style={styles.linksTitle}>Product</Text>
-            <TouchableOpacity><Text style={styles.linkText}>URL Shortener</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.linkText}>Analytics</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.linkText}>QR Codes</Text></TouchableOpacity>
-            <TouchableOpacity><Text style={styles.linkText}>API</Text></TouchableOpacity>
+            <Text style={styles.linksTitle}>Products</Text>
+            <TouchableOpacity onPress={() => router.push('/')}><Text style={styles.linkText}>Link Suite</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/tools')}><Text style={styles.linkText}>Image Suite</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/dashboard')}><Text style={styles.linkText}>Analytics</Text></TouchableOpacity>
+            <TouchableOpacity onPress={() => router.push('/links')}><Text style={styles.linkText}>QR Codes</Text></TouchableOpacity>
           </View>
+
 
           <View style={styles.linksGroup}>
             <Text style={styles.linksTitle}>Company</Text>

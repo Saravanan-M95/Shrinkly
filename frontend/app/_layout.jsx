@@ -35,6 +35,7 @@ export default function RootLayout() {
           <Stack.Screen name="links" />
           <Stack.Screen name="settings" />
           <Stack.Screen name="auth/callback" />
+          <Stack.Screen name="tools" />
           <Stack.Screen name="[code]" />
         </Stack>
       </View>

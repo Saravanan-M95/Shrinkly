@@ -20,10 +20,13 @@ import Button from '../components/ui/Button';
 import { useAuth } from '../contexts/AuthContext';
 import { urlAPI } from '../services/api';
 import { Colors, Spacing, FontSizes, BorderRadius, Shadows } from '../constants/theme';
+import { TOOLS_CATEGORIES } from '../constants/tools';
+
 
 export default function HomePage() {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
+
   const { width } = useWindowDimensions();
   const isMobile = width < 768;
   const isTablet = width >= 768 && width < 1024;
@@ -144,10 +147,11 @@ export default function HomePage() {
 
   const stats = [
     { value: '10M+', label: 'Links Shortened' },
-    { value: '500M+', label: 'Clicks Tracked' },
+    { value: '5M+', label: 'Images Processed' },
     { value: '150K+', label: 'Happy Users' },
     { value: '99.9%', label: 'Uptime' },
   ];
+
 
   return (
     <View style={styles.wrapper}>
@@ -178,69 +182,95 @@ export default function HomePage() {
           >
             <View style={styles.badge}>
               <Ionicons name="sparkles" size={14} color={Colors.primary} />
-              <Text style={styles.badgeText}>Free URL Shortener with Analytics</Text>
+              <Text style={styles.badgeText}>Unified Link & Image Workspace</Text>
             </View>
 
             <Text style={[styles.heroTitle, isMobile && styles.heroTitleMobile]}>
-              Shrink Your Links,{'\n'}
-              <Text style={styles.heroTitleGradient}>Grow Your Reach</Text>
+              Your All-in-One{'\n'}
+              <Text style={styles.heroTitleGradient}>Digital Toolbox</Text>
             </Text>
 
             <Text style={[styles.heroSubtitle, isMobile && styles.heroSubtitleMobile]}>
-              Create short, powerful links that track clicks, manage your digital assets,
-              and give you full control over your online presence.
+              Shrink links with deep analytics, isolate subjects with High-Fidelity AI, 
+              and master 13+ free image tools. Everything you need to manage your digital assets.
             </Text>
 
-            {/* URL Input */}
-            <Animated.View
-              style={[
-                styles.urlInputContainer,
-                isMobile && styles.urlInputContainerMobile,
-                { transform: [{ scale: pulseAnim }] },
-              ]}
-            >
-              <View style={[styles.urlInputWrapper, isMobile && styles.urlInputWrapperMobile]}>
-                <Ionicons name="link-outline" size={22} color={Colors.textMuted} style={styles.urlIcon} />
-                <TextInput
-                  value={url}
-                  onChangeText={(text) => { setUrl(text); setError(''); }}
-                  placeholder="Paste your long URL here..."
-                  placeholderTextColor={Colors.textMuted}
-                  style={[styles.urlInput, isMobile && styles.urlInputMobile]}
-                  onSubmitEditing={handleShrink}
-                  selectionColor={Colors.primary}
-                />
-                {!isMobile && (
-                  <TouchableOpacity onPress={handleShrink} disabled={isLoading}>
-                    <LinearGradient
-                      colors={Colors.gradientPrimary}
-                      start={{ x: 0, y: 0 }}
-                      end={{ x: 1, y: 0 }}
-                      style={styles.shrinkButton}
-                    >
-                      {isLoading ? (
-                        <Text style={styles.shrinkButtonText}>Shrinking...</Text>
-                      ) : (
-                        <>
-                          <Ionicons name="cut-outline" size={18} color="#fff" />
-                          <Text style={styles.shrinkButtonText}>Shrink It!</Text>
-                        </>
-                      )}
-                    </LinearGradient>
+
+            {/* Primary Action: URL Shortener */}
+            {!shortenedUrl && !error && (
+              <View style={[styles.mainActionContainer, isMobile && styles.mainActionContainerMobile]}>
+                <View style={[styles.urlInputContainer, isMobile && styles.urlInputContainerMobile]}>
+                  <View style={[styles.urlInputWrapper, isMobile && styles.urlInputWrapperMobile]}>
+                    <Ionicons name="link-outline" size={22} color={Colors.textMuted} style={styles.urlIcon} />
+                    <TextInput
+                      value={url}
+                      onChangeText={(text) => { setUrl(text); setError(''); }}
+                      placeholder="Paste your long link to shrink..."
+                      placeholderTextColor={Colors.textMuted}
+                      style={[styles.urlInput, isMobile && styles.urlInputMobile]}
+                      onSubmitEditing={handleShrink}
+                    />
+                    {!isMobile && (
+                      <TouchableOpacity onPress={handleShrink} disabled={isLoading}>
+                        <LinearGradient
+                          colors={Colors.gradientPrimary}
+                          style={styles.shrinkButton}
+                        >
+                          <Text style={styles.shrinkButtonText}>{isLoading ? '...' : 'Shrink Now'}</Text>
+                        </LinearGradient>
+                      </TouchableOpacity>
+                    )}
+                  </View>
+                  {isMobile && (
+                    <Button
+                      title={isLoading ? 'Shrinking...' : 'Shrink It!'}
+                      onPress={handleShrink}
+                      loading={isLoading}
+                      fullWidth
+                      style={{ marginTop: Spacing.sm }}
+                    />
+                  )}
+                </View>
+
+                {/* Primary Tools Grid */}
+                <View style={[styles.primaryToolsGrid, isMobile && styles.primaryToolsGridMobile]}>
+                  <TouchableOpacity 
+                    onPress={() => router.push('/tools/remove-background')}
+                    style={[styles.primaryToolCard, isMobile && styles.primaryToolCardMobile]}
+                  >
+                    <Card variant="glass" style={styles.primaryToolInner}>
+                      <View style={styles.badgePro}>
+                        <Text style={styles.badgeProText}>High Fidelity</Text>
+                      </View>
+                      <View style={[styles.primaryToolIcon, { backgroundColor: '#8B5CF6' + '20' }]}>
+                        <Ionicons name="cut" size={32} color="#8B5CF6" />
+                      </View>
+                      <View>
+                        <Text style={styles.primaryToolTitle}>Remove Background</Text>
+                        <Text style={styles.primaryToolDesc}>AI-powered subject isolation</Text>
+                      </View>
+                    </Card>
                   </TouchableOpacity>
-                )}
+
+                  <TouchableOpacity 
+                    onPress={() => router.push('/tools/compress')}
+                    style={[styles.primaryToolCard, isMobile && styles.primaryToolCardMobile]}
+                  >
+                    <Card variant="glass" style={styles.primaryToolInner}>
+                      <View style={[styles.primaryToolIcon, { backgroundColor: '#EC4899' + '20' }]}>
+                        <Ionicons name="contract" size={32} color="#EC4899" />
+                      </View>
+                      <View>
+                        <Text style={styles.primaryToolTitle}>Compress Image</Text>
+                        <Text style={styles.primaryToolDesc}>Keep quality, reduce size</Text>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                </View>
               </View>
-              {isMobile && (
-                <Button
-                  title={isLoading ? 'Shrinking...' : 'Shrink It!'}
-                  onPress={handleShrink}
-                  loading={isLoading}
-                  fullWidth
-                  icon={<Ionicons name="cut-outline" size={18} color="#fff" />}
-                  style={{ marginTop: Spacing.sm }}
-                />
-              )}
-            </Animated.View>
+            )}
+
+
 
             {error ? (
               <View style={styles.errorContainer}>
@@ -323,7 +353,32 @@ export default function HomePage() {
           </Text>
 
           <View style={[styles.featuresGrid, isMobile && styles.featuresGridMobile]}>
-            {features.map((feature, index) => (
+            {[
+              {
+                icon: 'flash-outline',
+                title: 'Blazing Speed',
+                desc: 'Instant URL redirects and lightning-fast in-browser image processing.',
+                color: Colors.success,
+              },
+              {
+                icon: 'cut-outline',
+                title: 'Pro AI Tools',
+                desc: 'Remove backgrounds and upscale images with industry-leading precision.',
+                color: Colors.primary,
+              },
+              {
+                icon: 'analytics-outline',
+                title: 'Deep Analytics',
+                desc: 'Track every click and asset interaction with real-time geographic data.',
+                color: Colors.accent,
+              },
+              {
+                icon: 'shield-checkmark-outline',
+                title: 'Privacy First',
+                desc: 'Your images never leave your browser for most tools. 100% secure.',
+                color: '#14B8A6',
+              },
+            ].map((feature, index) => (
               <Card key={index} variant="glass" style={[styles.featureCard, isMobile && styles.featureCardMobile]}>
                 <View style={[styles.featureIconBg, { backgroundColor: feature.color + '15' }]}>
                   <Ionicons name={feature.icon} size={28} color={feature.color} />
@@ -333,8 +388,46 @@ export default function HomePage() {
               </Card>
             ))}
           </View>
+
         </View>
 
+        {/* Product Catalog Section */}
+        <View style={styles.catalogSection}>
+          <Text style={[styles.sectionTitle, isMobile && styles.sectionTitleMobile]}>
+            Professional <Text style={styles.sectionTitleAccent}>Product Suite</Text>
+          </Text>
+          <Text style={styles.sectionSubtitle}>
+            13 Free Image Tools & Powerful Link Management
+          </Text>
+
+          {TOOLS_CATEGORIES.map((cat, idx) => (
+            <View key={idx} style={[styles.catalogCategory, isMobile && styles.catalogCategoryMobile]}>
+              <View style={styles.categoryLabelContainer}>
+                <Text style={styles.categoryLabel}>{cat.category}</Text>
+                <View style={styles.categoryLine} />
+              </View>
+              <View style={[styles.catalogGrid, isMobile && styles.catalogGridMobile]}>
+                {cat.items.map((item) => (
+                  <TouchableOpacity 
+                    key={item.id} 
+                    onPress={() => router.push(item.route)}
+                    style={[styles.catalogItem, isMobile && styles.catalogItemMobile]}
+                  >
+                    <Card variant="glass" style={styles.catalogCard}>
+                      <View style={[styles.catalogIcon, { backgroundColor: item.color + '15' }]}>
+                        <Ionicons name={item.icon} size={22} color={item.color} />
+                      </View>
+                      <View style={styles.catalogText}>
+                        <Text style={styles.catalogItemTitle}>{item.title}</Text>
+                        <Text style={styles.catalogItemDesc} numberOfLines={1}>{item.desc}</Text>
+                      </View>
+                    </Card>
+                  </TouchableOpacity>
+                ))}
+              </View>
+            </View>
+          ))}
+        </View>
 
 
         {/* FAQ Section */}
@@ -349,12 +442,16 @@ export default function HomePage() {
           <View style={styles.faqGrid}>
             {[
               {
-                q: 'Are shortened links safe?',
-                a: 'Absolutely. We use automated safety scanners to check every link for malicious content or phishing attempts to protect our users.',
+                q: 'Are my images stored on your servers?',
+                a: 'Most of our image tools process files directly in your browser. For AI tools like Background Removal, we use secure, transient processing that deletes your data immediately after completion.',
               },
               {
-                q: 'Can I track my link performance?',
-                a: 'Yes, every link comes with its own analytics dashboard where you can see clicks, geographic data, device types and more.',
+                q: 'Are shortened links permanent?',
+                a: 'Yes, your shortened links will remain active as long as they comply with our safety guidelines. You can track their performance forever in your dashboard.',
+              },
+              {
+                q: 'Do I need an account to use the tools?',
+                a: 'You can use all image tools for free without an account. URL shortening with analytics requires a quick sign-up to save your data.',
               },
             ].map((faq, index) => (
               <Card key={index} variant="glass" style={styles.faqCard}>
@@ -363,6 +460,7 @@ export default function HomePage() {
               </Card>
             ))}
           </View>
+
         </View>
 
         {/* CTA Section */}
@@ -371,17 +469,18 @@ export default function HomePage() {
           style={styles.ctaSection}
         >
           <Text style={[styles.ctaTitle, isMobile && styles.ctaTitleMobile]}>
-            Ready to Start Shrinking?
+            Master Your Digital Assets
           </Text>
           <Text style={styles.ctaSubtitle}>
-            Join thousands of users who trust ShrinQE for their link management.
+            Join 150K+ users who trust ShrinQE for link management and image processing.
           </Text>
           <Button
-            title="Get Started — It's Free"
+            title="Start Using ShrinQE — It's Free"
             onPress={() => router.push(isAuthenticated ? '/dashboard' : '/signup')}
             size="lg"
             icon={<Ionicons name="rocket-outline" size={20} color="#fff" />}
           />
+
         </LinearGradient>
 
         <Footer />
@@ -488,8 +587,8 @@ const styles = StyleSheet.create({
   // URL Input
   urlInputContainer: {
     width: '100%',
-    maxWidth: 680,
   },
+
   urlInputContainerMobile: {
     maxWidth: '100%',
   },
@@ -589,6 +688,154 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
 
+  // Unified Product Suite
+  mainActionContainer: {
+    width: '100%',
+    maxWidth: 900,
+    alignItems: 'center',
+    marginTop: Spacing.xl,
+    gap: Spacing.xl,
+  },
+  mainActionContainerMobile: {
+    gap: Spacing.lg,
+  },
+  primaryToolsGrid: {
+    flexDirection: 'row',
+    width: '100%',
+    gap: Spacing.lg,
+    justifyContent: 'center',
+  },
+  primaryToolsGridMobile: {
+    flexDirection: 'column',
+  },
+  primaryToolCard: {
+    flex: 1,
+  },
+  primaryToolCardMobile: {
+    width: '100%',
+  },
+  primaryToolInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.lg,
+    padding: Spacing.lg,
+    minHeight: 110,
+    position: 'relative',
+    overflow: 'hidden',
+  },
+  primaryToolIcon: {
+    width: 60,
+    height: 60,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  primaryToolTitle: {
+    color: Colors.textPrimary,
+    fontSize: FontSizes.lg,
+    fontWeight: '800',
+    marginBottom: 2,
+  },
+  primaryToolDesc: {
+    color: Colors.textSecondary,
+    fontSize: FontSizes.sm,
+  },
+  badgePro: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+    backgroundColor: Colors.primary,
+    paddingVertical: 2,
+    paddingHorizontal: 8,
+    borderRadius: BorderRadius.full,
+  },
+  badgeProText: {
+    color: '#fff',
+    fontSize: 10,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+  },
+
+
+  // Product Catalog Section
+  catalogSection: {
+    paddingVertical: Spacing.xxxl,
+    paddingHorizontal: Spacing.lg,
+    alignItems: 'center',
+    backgroundColor: Colors.bgPrimary,
+  },
+  catalogCategory: {
+    width: '100%',
+    maxWidth: 1100,
+    marginTop: Spacing.xl,
+  },
+  catalogCategoryMobile: {
+    marginTop: Spacing.lg,
+  },
+  categoryLabelContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    marginBottom: Spacing.lg,
+  },
+  categoryLabel: {
+    color: Colors.textMuted,
+    fontSize: FontSizes.xs,
+    fontWeight: '800',
+    textTransform: 'uppercase',
+    letterSpacing: 2,
+  },
+  categoryLine: {
+    flex: 1,
+    height: 1,
+    backgroundColor: Colors.borderLight,
+  },
+  catalogGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: Spacing.md,
+    justifyContent: 'flex-start',
+  },
+  catalogGridMobile: {
+    gap: Spacing.sm,
+  },
+  catalogItem: {
+    width: '23.5%', // 4 columns
+    minHeight: 100,
+  },
+  catalogItemMobile: {
+    width: '48%', // 2 columns
+  },
+  catalogCard: {
+    flex: 1,
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: Spacing.md,
+    padding: Spacing.md,
+    minHeight: 80,
+  },
+  catalogIcon: {
+    width: 44,
+    height: 44,
+    borderRadius: BorderRadius.md,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  catalogText: {
+    flex: 1,
+    gap: 2,
+  },
+  catalogItemTitle: {
+    color: Colors.textPrimary,
+    fontSize: FontSizes.md,
+    fontWeight: '700',
+  },
+  catalogItemDesc: {
+    color: Colors.textMuted,
+    fontSize: FontSizes.xs,
+  },
+
+
   // Stats
   statsSection: {
     paddingVertical: Spacing.xxl,
@@ -615,9 +862,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   statItemMobile: {
-    width: '40%',
-    marginBottom: Spacing.md,
+    width: '45%',
+    marginBottom: Spacing.lg,
+    backgroundColor: Colors.bgCard,
+    padding: Spacing.md,
+    borderRadius: BorderRadius.md,
+    borderWidth: 1,
+    borderColor: Colors.borderLight,
   },
+
   statValue: {
     fontSize: FontSizes.xxxl,
     fontWeight: '900',
@@ -747,5 +1000,10 @@ const styles = StyleSheet.create({
     fontSize: FontSizes.sm,
     color: Colors.textMuted,
     lineHeight: 22,
+  },
+
+  catalogItemDesc: {
+    color: Colors.textMuted,
+    fontSize: FontSizes.xs,
   },
 });

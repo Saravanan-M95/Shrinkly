@@ -133,6 +133,19 @@ export function AuthProvider({ children }) {
     await storage.removeItem('shrinqe_token');
   }, []);
 
+  const updateProfile = useCallback(async (data) => {
+    try {
+      setError(null);
+      const response = await authAPI.updateProfile(data);
+      setUser(response.data.user);
+      return { success: true };
+    } catch (err) {
+      const message = err.message || 'Failed to update profile';
+      setError(message);
+      return { success: false, message };
+    }
+  }, []);
+
   const clearError = useCallback(() => setError(null), []);
 
   return (
@@ -146,6 +159,7 @@ export function AuthProvider({ children }) {
         login,
         signup,
         logout,
+        updateProfile,
         handleOAuthToken,
         clearError,
       }}

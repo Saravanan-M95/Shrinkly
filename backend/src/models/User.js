@@ -3,8 +3,8 @@ import sequelize from '../config/database.js';
 
 const User = sequelize.define('User', {
   id: {
-    type: DataTypes.UUID,
-    defaultValue: DataTypes.UUIDV4,
+    type: DataTypes.INTEGER,
+    autoIncrement: true,
     primaryKey: true,
   },
   email: {
@@ -21,7 +21,7 @@ const User = sequelize.define('User', {
   },
   name: {
     type: DataTypes.STRING(100),
-    allowNull: false,
+    allowNull: true, // Set to true to allow existing users in DB to migration without error
   },
   avatarUrl: {
     type: DataTypes.STRING(500),

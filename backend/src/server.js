@@ -12,6 +12,7 @@ import authRoutes from './routes/authRoutes.js';
 import urlRoutes from './routes/urlRoutes.js';
 import { redirectUrl } from './controllers/urlController.js';
 import { errorHandler, notFoundHandler } from './middleware/errorHandler.js';
+import toolsRoutes from './routes/tools.js';
 import { generalLimiter, redirectLimiter } from './middleware/rateLimiter.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -86,6 +87,7 @@ app.get('/api/health', (req, res) => {
 // API Routes
 app.use('/api/auth', authRoutes);
 app.use('/api/urls', urlRoutes);
+app.use('/api/tools', toolsRoutes);
 
 // Short URL redirect (must be after API routes)
 app.get('/:code', redirectLimiter, redirectUrl);
@@ -100,9 +102,9 @@ const startServer = async () => {
     await sequelize.authenticate();
     console.log('✅ Database connected successfully');
 
-    // Sync models (use migrations in production)
+    // Sync models (Standard sync to avoid constraint conflicts)
     if (process.env.NODE_ENV !== 'production') {
-      await sequelize.sync({ alter: true });
+      await sequelize.sync();
       console.log('✅ Database models synced');
     }
 
