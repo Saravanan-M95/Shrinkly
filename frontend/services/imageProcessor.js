@@ -389,23 +389,21 @@ export const blurRegions = async (file, regions = [], intensity = 15) => {
     const regionCtx = regionCanvas.getContext('2d');
     regionCtx.drawImage(canvas, x, y, width, height, 0, 0, width, height);
 
-    // Apply box blur by scaling down then up
-    const blurCanvas = createCanvas(width, height);
-    const blurCtx = blurCanvas.getContext('2d');
-
+    // Apply blur by scaling down then up
     const scaleFactor = Math.max(1, Math.round(intensity / 2));
     const smallW = Math.max(1, Math.round(width / scaleFactor));
     const smallH = Math.max(1, Math.round(height / scaleFactor));
 
+    const smallCanvas = createCanvas(smallW, smallH);
+    const smallCtx = smallCanvas.getContext('2d');
+    
     // Scale down
-    blurCtx.drawImage(regionCanvas, 0, 0, smallW, smallH);
-    // Scale back up (creates blur effect)
-    blurCtx.imageSmoothingEnabled = true;
-    blurCtx.imageSmoothingQuality = 'low';
-    blurCtx.drawImage(blurCanvas, 0, 0, smallW, smallH, 0, 0, width, height);
+    smallCtx.drawImage(regionCanvas, 0, 0, smallW, smallH);
 
-    // Draw blurred region back
-    ctx.drawImage(blurCanvas, x, y);
+    // Scale back up directly onto the main canvas (creates blur effect)
+    ctx.imageSmoothingEnabled = true;
+    ctx.imageSmoothingQuality = 'low';
+    ctx.drawImage(smallCanvas, 0, 0, smallW, smallH, x, y, width, height);
   }
 
   const outputType = file.type === 'image/png' ? 'image/png' : 'image/jpeg';

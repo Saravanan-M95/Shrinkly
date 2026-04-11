@@ -32,11 +32,27 @@ export async function removeBackgroundPro(inputBuffer) {
         return Buffer.from(response.data);
     } catch (err) {
         if (err.response && err.response.data) {
-            // Error response from Remove.bg is typically a JSON buffer
-            const errorData = JSON.parse(Buffer.from(err.response.data).toString());
-            console.error('[PRO-AI] API Error:', errorData);
-            throw new Error(`Remove.bg Error: ${errorData.errors[0].title}`);
+            try {
+                // Error response from Remove.bg is typically a JSON buffer
+                const errorData = JSON.parse(Buffer.from(err.response.data).toString());
+                console.error('[PRO-AI] API Error:', errorData);
+                
+                const vendorError = (errorData.errors?.[0]?.title || '').toLowerCase();
+                if (vendorError.includes('foreground')) {
+                    throw new Error('No clear subject or foreground could be identified in the image. Please try a different photo.');
+                }
+                if (vendorError.includes('size')) {
+                    throw new Error('The image is too large or unsupported. Please use a smaller file or a standard JPEG/PNG.');
+                }
+                throw new Error('The image could not be processed. Please try another photo.');
+            } catch (parseErr) {
+                // If it's already an error we threw above, re-throw it.
+                if (parseErr.message && !parseErr.message.includes('Unexpected')) {
+                    throw parseErr;
+                }
+                throw new Error('Failed to process image. The service might be temporarily unavailable.');
+            }
         }
-        throw err;
+        throw new Error('Failed to process image. Please try again.');
     }
 }

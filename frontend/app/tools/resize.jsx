@@ -11,6 +11,7 @@ import ToolPageLayout from '../../components/tools/ToolPageLayout';
 import ImageDropZone from '../../components/tools/ImageDropZone';
 import DownloadButton from '../../components/tools/DownloadButton';
 import Card from '../../components/ui/Card';
+import Button from '../../components/ui/Button';
 import { Colors, Spacing, FontSizes, BorderRadius } from '../../constants/theme';
 import { resizeImage, getImageInfo } from '../../services/imageProcessor';
 
@@ -203,24 +204,14 @@ export default function ResizeTool() {
           </View>
 
           <View style={styles.actionRow}>
-            <button
-              onClick={handleResize}
+            <Button
+              title={processing ? "Resizing..." : "Resize Image"}
+              onPress={handleResize}
               disabled={processing}
-              style={{
-                background: processing ? Colors.bgTertiary : 'linear-gradient(135deg, #3B82F6, #7C3AED)',
-                color: '#fff',
-                border: 'none',
-                borderRadius: 12,
-                padding: '14px 32px',
-                fontSize: 15,
-                fontWeight: 700,
-                fontFamily: 'Inter, sans-serif',
-                cursor: processing ? 'not-allowed' : 'pointer',
-                transition: 'all 0.2s ease',
-              }}
-            >
-              {processing ? '⏳ Resizing...' : '📐 Resize Image'}
-            </button>
+              loading={processing}
+              icon={!processing && <Ionicons name="resize-outline" size={18} color="#fff" />}
+              variant="primary"
+            />
           </View>
         </Card>
       )}
