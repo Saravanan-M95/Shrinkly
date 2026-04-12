@@ -19,6 +19,13 @@ export default function RootHTML({ children }: { children: React.ReactNode }) {
         {/* Reset styles for the web */}
         <ScrollViewStyleReset />
 
+        {/* Google AdSense Verification */}
+        <script 
+          async 
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-4000404993258529"
+          crossOrigin="anonymous"
+        ></script>
+
         {/* Global CSS Reset */}
         <style dangerouslySetInnerHTML={{ __html: `
           body { background-color: #0F0D15; margin: 0; padding: 0; overflow-x: hidden; }
