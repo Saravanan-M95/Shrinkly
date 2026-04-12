@@ -5,6 +5,7 @@ const Click = sequelize.define('Click', {
   id: {
     type: DataTypes.INTEGER,
     autoIncrement: true,
+    autoIncrementIdentity: true,
     primaryKey: true,
   },
   urlId: {
